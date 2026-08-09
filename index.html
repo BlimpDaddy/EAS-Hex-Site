@@ -143,6 +143,86 @@
             color: var(--orange);
         }
 
+        /* Newsletter link shares CONTACT's grid cell and sits directly beneath it —
+           no other element moves. */
+        .newsletter {
+            grid-area: cont;
+            justify-self: end;
+            align-self: start;
+            margin-top: 2.2rem;
+            font-size: 1.5rem;
+            color: var(--pink);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .newsletter:hover {
+            color: var(--orange);
+        }
+
+        .nl-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .nl-overlay.open {
+            display: flex;
+        }
+
+        .nl-box {
+            background: #111;
+            border: 0.25rem solid #222;
+            border-radius: 0.25rem;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: min(90vw, 26rem);
+            font-size: 1.5rem;
+            color: var(--pink);
+        }
+
+        .nl-box input {
+            font-family: Genos;
+            font-size: 1.5rem;
+            background: #1c1c1c;
+            color: #eaeaea;
+            border: 1px solid var(--gray);
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            outline: none;
+        }
+
+        .nl-box input:focus {
+            border-color: var(--pink);
+        }
+
+        .nl-msg {
+            font-size: 1.1rem;
+            color: #eaeaea;
+            min-height: 1.5rem;
+        }
+
+        .nl-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .nl-actions a {
+            cursor: pointer;
+            color: var(--pink);
+        }
+
+        .nl-actions a:hover {
+            color: var(--orange);
+        }
+
         .hex {
             grid-area: main;
             justify-self: center;
@@ -295,6 +375,67 @@
         </div>
     </div>
     <a class="contact" href="mailto:contact@electricairshipping.com">CONTACT</a>
+    <a class="newsletter" data-nl-open>RECEIVE</a>
+    <div class="nl-overlay" data-nl-overlay>
+        <div class="nl-box">
+            <div>Receive the EAS newsletter</div>
+            <input type="email" placeholder="your@email.com" data-nl-email>
+            <div class="nl-msg" data-nl-msg></div>
+            <div class="nl-actions">
+                <a data-nl-cancel>CANCEL</a>
+                <a data-nl-ok>OK</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        (() => {
+            const overlay = document.querySelector('[data-nl-overlay]');
+            const emailIn = document.querySelector('[data-nl-email]');
+            const msg = document.querySelector('[data-nl-msg]');
+            const okBtn = document.querySelector('[data-nl-ok]');
+            let busy = false;
+
+            const open = () => { overlay.classList.add('open'); msg.textContent = ''; emailIn.focus(); };
+            const close = () => { if (!busy) overlay.classList.remove('open'); };
+
+            document.querySelector('[data-nl-open]').addEventListener('click', open);
+            document.querySelector('[data-nl-cancel]').addEventListener('click', close);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+            emailIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') okBtn.click(); });
+
+            okBtn.addEventListener('click', async () => {
+                if (busy) return;
+                const email = emailIn.value.trim();
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+                    msg.textContent = 'Please enter a valid email address.';
+                    return;
+                }
+                busy = true;
+                msg.textContent = 'Submitting…';
+                try {
+                    const res = await fetch('/api/waitlist', {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ email }),
+                    });
+                    const data = await res.json();
+                    if (data.ok) {
+                        msg.textContent = data.added ? "You're on the list ✓" : 'Already on the list ✓';
+                        emailIn.value = '';
+                        setTimeout(() => { busy = false; close(); }, 1600);
+                        return;
+                    }
+                    msg.textContent = data.error === 'invalid'
+                        ? 'Please enter a valid email address.'
+                        : 'Something went wrong — please try again later.';
+                } catch {
+                    msg.textContent = 'Something went wrong — please try again later.';
+                }
+                busy = false;
+            });
+        })();
+    </script>
     <video src="assets/render.webm" autoplay="" loop="" class="hex" muted=""></video>
     <svg viewBox="0 0 100 100" class="hex">
         <path class="path-bg" d="M30 15.359 H70 L90 50 L70 84.641 H30 L10 50 Z"></path>
