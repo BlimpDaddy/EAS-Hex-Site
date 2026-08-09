@@ -447,16 +447,20 @@
                     });
                     const data = await res.json();
                     if (data.ok) {
-                        msg.textContent = data.added ? "You're on the list ✓" : 'Already on the list ✓';
+                        msg.textContent = data.status === 'already'
+                            ? 'Already on the list ✓'
+                            : 'Check your inbox to confirm ✓';
                         emailIn.value = '';
-                        setTimeout(() => { busy = false; close(); }, 1600);
+                        setTimeout(() => { busy = false; close(); }, 2600);
                         return;
                     }
                     msg.textContent = data.error === 'invalid'
                         ? 'Please enter a valid email address.'
                         : data.error === 'turnstile'
                             ? 'Verification failed — please try again.'
-                            : 'Something went wrong — please try again later.';
+                            : data.error === 'email'
+                                ? 'Couldn’t send the confirmation email — please try again later.'
+                                : 'Something went wrong — please try again later.';
                     if (window.turnstile && tsWidget !== null) window.turnstile.reset(tsWidget);
                 } catch {
                     msg.textContent = 'Something went wrong — please try again later.';
