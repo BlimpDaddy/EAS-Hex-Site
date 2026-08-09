@@ -380,6 +380,7 @@
         <div class="nl-box">
             <div>Receive the EAS newsletter</div>
             <input type="email" placeholder="your@email.com" data-nl-email>
+            <div data-nl-turnstile></div>
             <div class="nl-msg" data-nl-msg></div>
             <div class="nl-actions">
                 <a data-nl-cancel>CANCEL</a>
@@ -387,6 +388,7 @@
             </div>
         </div>
     </div>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script>
         (() => {
             const overlay = document.querySelector('[data-nl-overlay]');
@@ -395,7 +397,25 @@
             const okBtn = document.querySelector('[data-nl-ok]');
             let busy = false;
 
-            const open = () => { overlay.classList.add('open'); msg.textContent = ''; emailIn.focus(); };
+            // Turnstile bot check — rendered on first open (the widget dislikes
+            // rendering inside display:none containers). Managed mode: invisible for
+            // normal humans, shows a check only when something looks automated.
+            const TURNSTILE_SITEKEY = '0x4AAAAAAEKubehZQp3K3TbK';
+            let tsWidget = null;
+            const renderTurnstile = () => {
+                if (tsWidget !== null || !window.turnstile) return;
+                tsWidget = window.turnstile.render(document.querySelector('[data-nl-turnstile]'), {
+                    sitekey: TURNSTILE_SITEKEY,
+                    theme: 'dark',
+                });
+            };
+
+            const open = () => {
+                overlay.classList.add('open');
+                msg.textContent = '';
+                renderTurnstile();
+                emailIn.focus();
+            };
             const close = () => { if (!busy) overlay.classList.remove('open'); };
 
             document.querySelector('[data-nl-open]').addEventListener('click', open);
@@ -411,13 +431,19 @@
                     msg.textContent = 'Please enter a valid email address.';
                     return;
                 }
+                const tsToken = window.turnstile && tsWidget !== null
+                    ? window.turnstile.getResponse(tsWidget) : '';
+                if (!tsToken) {
+                    msg.textContent = 'Please complete the verification check.';
+                    return;
+                }
                 busy = true;
                 msg.textContent = 'Submitting…';
                 try {
                     const res = await fetch('/api/waitlist', {
                         method: 'POST',
                         headers: { 'content-type': 'application/json' },
-                        body: JSON.stringify({ email }),
+                        body: JSON.stringify({ email, tsToken }),
                     });
                     const data = await res.json();
                     if (data.ok) {
@@ -428,7 +454,10 @@
                     }
                     msg.textContent = data.error === 'invalid'
                         ? 'Please enter a valid email address.'
-                        : 'Something went wrong — please try again later.';
+                        : data.error === 'turnstile'
+                            ? 'Verification failed — please try again.'
+                            : 'Something went wrong — please try again later.';
+                    if (window.turnstile && tsWidget !== null) window.turnstile.reset(tsWidget);
                 } catch {
                     msg.textContent = 'Something went wrong — please try again later.';
                 }

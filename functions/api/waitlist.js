@@ -16,14 +16,39 @@
  * eas-newsletter → Console → SELECT * FROM newsletter ORDER BY added_utc;
  */
 export async function onRequestPost({ request, env }) {
-  let email;
+  let email, tsToken;
   try {
-    email = String((await request.json()).email ?? '').trim().toLowerCase();
+    const body = await request.json();
+    email = String(body.email ?? '').trim().toLowerCase();
+    tsToken = String(body.tsToken ?? '');
   } catch {
     return Response.json({ ok: false, error: 'invalid' }, { status: 400 });
   }
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return Response.json({ ok: false, error: 'invalid' }, { status: 400 });
+  }
+
+  // Turnstile verification — a signup only counts if Cloudflare vouches the
+  // token came from a real visitor. No TURNSTILE_SECRET configured = closed,
+  // not open: better a broken form we notice than a silently unguarded list.
+  if (!env.TURNSTILE_SECRET) {
+    return Response.json({ ok: false, error: 'server' }, { status: 500 });
+  }
+  try {
+    const verify = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        secret: env.TURNSTILE_SECRET,
+        response: tsToken,
+        remoteip: request.headers.get('cf-connecting-ip') ?? undefined,
+      }),
+    });
+    if (!(await verify.json()).success) {
+      return Response.json({ ok: false, error: 'turnstile' }, { status: 403 });
+    }
+  } catch {
+    return Response.json({ ok: false, error: 'server' }, { status: 500 });
   }
   try {
     await env.DB.exec(
