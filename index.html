@@ -1,18 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electric Air Shipping</title>
+    <meta name="description"
+        content="The sustainable middle option for global freight. Electric Air Shipping is building the Sunship — a volumetric-thermal cargo airship lifted by superheated air. No helium, no hydrogen, no emissions in flight.">
+    <link rel="canonical" href="https://electricairshipping.com/">
+
+    <!-- Link previews. Without these a shared link renders as a bare URL. -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Electric Air Shipping">
+    <meta property="og:title" content="Electric Air Shipping">
+    <meta property="og:description"
+        content="The sustainable middle option for global freight. And a first step toward much more.">
+    <meta property="og:url" content="https://electricairshipping.com/">
+    <meta property="og:image" content="https://electricairshipping.com/assets/hero/over-water-1920.webp">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
-    <meta http-equiv="refresh" content="0; url=/knowledgebase">
+
+    <!-- The hero headline and lead render are the largest things above the
+         fold; both are preloaded so the first paint is the real page. -->
+    <link rel="preload" as="font" type="font/woff2" href="./assets/fonts/Geist-Variable.woff2" crossorigin>
+    <link rel="preload" as="image"
+        imagesrcset="./assets/hero/over-water-1280.webp 1280w, ./assets/hero/over-water-1920.webp 1920w, ./assets/hero/over-water-2560.webp 2560w, ./assets/hero/over-water-2730.webp 2730w"
+        imagesizes="100vw">
+
+    <link rel="stylesheet" href="./assets/site.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-snap-type: y proximity;
+            /* One decisive scroll lands on a slide top; a nudge springs back.
+               Snap targets clear the fixed bar because scroll-padding-top and
+               the bar's height are the same variable — they cannot drift. */
+            scroll-padding-top: var(--bar-h);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: Geist, system-ui, sans-serif;
+        }
+
+        h1,
+        h2,
+        p {
+            margin: 0;
+        }
+
+        .snap {
+            scroll-snap-align: start;
+        }
+
+        /* ------------------------------------------------------------ hero */
+
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            min-height: 100dvh;   /* mobile URL bars resize the viewport; dvh tracks it */
+            overflow: hidden;
+        }
+
+        .hero-lead,
+        .hero-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* The lead render is the only image in the initial markup — the other
+           four are attached by script AFTER window load so nothing competes
+           with the largest contentful paint. Each overlay then takes a slot in
+           a 30s cycle; while an overlay is transparent (or not yet loaded) the
+           lead shows through, so a slow connection degrades to a still. */
+        .hero-layer {
+            opacity: 0;
+            animation: heroFade 30s linear infinite;
+        }
+
+        .hero-layer:nth-of-type(2) { animation-delay: 4.5s; }
+        .hero-layer:nth-of-type(3) { animation-delay: 10.5s; }
+        .hero-layer:nth-of-type(4) { animation-delay: 16.5s; }
+        .hero-layer:nth-of-type(5) { animation-delay: 22.5s; }
+
+        @keyframes heroFade {
+            0% { opacity: 0; }
+            5% { opacity: 1; }
+            20% { opacity: 1; }
+            25% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* Scrim: the text sits over five different frames as they cycle, so
+           contrast is tuned against the BRIGHTEST (docking), not the lead. */
+        .hero-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top,
+                    rgba(8, 8, 8, 0.78) 0%,
+                    rgba(8, 8, 8, 0.45) 32%,
+                    rgba(8, 8, 8, 0.0) 62%);
+        }
+
+        .hero-text {
+            position: absolute;
+            left: clamp(1.25rem, 6vw, 5rem);
+            right: clamp(1.25rem, 6vw, 5rem);
+            bottom: clamp(2.5rem, 9vh, 6rem);
+            max-width: 46rem;
+        }
+
+        .hero-text .lockup {
+            height: clamp(2.1rem, 5vh, 3rem);
+            width: auto;
+            display: block;
+            margin-bottom: clamp(1rem, 3vh, 1.75rem);
+        }
+
+        .hero-text h1 {
+            font-size: clamp(1.9rem, 4.6vw, 3.4rem);
+            font-weight: 500;
+            line-height: 1.12;
+            letter-spacing: -0.01em;
+            text-wrap: balance;
+        }
+
+        .hero-text .sub {
+            margin-top: clamp(0.7rem, 2vh, 1.1rem);
+            font-size: clamp(1.05rem, 2vw, 1.45rem);
+            font-weight: 400;
+            color: var(--orange);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            margin-top: clamp(1.4rem, 3.5vh, 2.2rem);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.85em 1.6em;
+            border-radius: 0.3rem;
+            font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+            font-weight: 500;
+            letter-spacing: 0.09em;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--berry);
+            color: #fff;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus-visible {
+            background: #d63bb4;
+        }
+
+        .btn-secondary {
+            background: rgba(17, 17, 17, 0.55);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(6px);
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus-visible {
+            border-color: #fff;
+            background: rgba(17, 17, 17, 0.75);
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid var(--orange);
+            outline-offset: 3px;
+        }
+
+        .chev {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+            animation: chevNudge 2.4s ease-in-out infinite;
+        }
+
+        .chev svg {
+            width: 1.9rem;
+            height: 1.9rem;
+            display: block;
+        }
+
+        @keyframes chevNudge {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 0.45rem); }
+        }
+
+        /* ------------------------------------------------------------ deck */
+
+        .deck {
+            position: relative;
+        }
+
+        .slide {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: var(--bar-h);
+        }
+
+        .slide figure {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide img {
+            display: block;
+            max-width: 100%;
+            max-height: calc(100vh - var(--bar-h));
+            max-height: calc(100dvh - var(--bar-h));
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* One line, only where it earns its place: narrow portrait screens,
+           where people with rotation lock on would otherwise conclude the
+           site is broken. Sticky inside the deck, so it never overlays the
+           hero or the closing panel. */
+        .rotate-hint {
+            display: none;
+            position: sticky;
+            top: calc(var(--bar-h) + 0.6rem);
+            z-index: 5;
+            width: fit-content;
+            margin: 0 auto -2.2rem;
+            padding: 0.35em 1em;
+            border-radius: 1em;
+            background: rgba(17, 17, 17, 0.7);
+            color: var(--muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            pointer-events: none;
+        }
+
+        @media (orientation: portrait) and (max-width: 700px) {
+            .rotate-hint {
+                display: block;
+            }
+        }
+
+        /* --------------------------------------------------------- closing */
+
+        .closing {
+            min-height: 55vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(1.6rem, 4vh, 2.6rem);
+            padding: 4rem 1.5rem;
+            text-align: center;
+        }
+
+        .closing .lockup {
+            height: 2rem;
+            width: auto;
+            opacity: 0.9;
+        }
+
+        .closing-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            justify-content: center;
+        }
+
+        /* --------------------------------------------------- reduced motion */
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .hero-layer {
+                animation: none;
+                opacity: 0;   /* the lead render alone, as a still */
+            }
+
+            .chev {
+                animation: none;
+            }
+        }
+    </style>
 </head>
-<body style="margin:0;background:#111;color:#eee;font-family:system-ui,sans-serif;
-             display:flex;align-items:center;justify-content:center;height:100vh">
-    <!-- TEMPORARY — Phase B placeholder.
-         The homepage (hero + deck + closing panel) replaces this file entirely
-         in Phase C. It exists only so the site is never in a broken state
-         between phases. It must not survive to release. -->
-    <p>Redirecting to the <a href="/knowledgebase" style="color:#c628a5">knowledge base</a>…</p>
+
+<body>
+    <header class="topbar">
+        <a class="topbar-home" href="/" aria-label="Electric Air Shipping — home">
+            <img src="./assets/logo.svg" alt="Electric Air Shipping">
+        </a>
+        <nav class="topbar-nav">
+            <a href="mailto:contact@electricairshipping.com">CONTACT</a>
+            <a href="#" data-nl-open>RECEIVE</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- ============================================================ hero -->
+        <section class="hero snap" aria-label="Electric Air Shipping">
+            <img class="hero-lead" alt="The Sunship — a broad, faceted metallic airship — over open water at sunset"
+                src="./assets/hero/over-water-1920.webp"
+                srcset="./assets/hero/over-water-1280.webp 1280w, ./assets/hero/over-water-1920.webp 1920w, ./assets/hero/over-water-2560.webp 2560w, ./assets/hero/over-water-2730.webp 2730w"
+                sizes="100vw" width="2730" height="1536" fetchpriority="high">
+
+            <!-- Attached by script after window load; decorative. -->
+            <div class="hero-layer" aria-hidden="true" data-slug="forest" data-widths="1280,1672"></div>
+            <div class="hero-layer" aria-hidden="true" data-slug="shallows" data-widths="1280,1920,2560,2956"></div>
+            <div class="hero-layer" aria-hidden="true" data-slug="water-low" data-widths="1280,1672"></div>
+            <div class="hero-layer" aria-hidden="true" data-slug="docking" data-widths="1280,1920,2432"></div>
+
+            <div class="hero-scrim" aria-hidden="true"></div>
+
+            <div class="hero-text">
+                <img class="lockup" src="./assets/logo.svg" alt="">
+                <h1>The sustainable middle option for global freight.</h1>
+                <p class="sub">And a first step toward much more. Join us.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#slide-1">EXPLORE THE EAS PROJECT</a>
+                    <a class="btn btn-secondary" href="/knowledgebase">EXPLORE THE KNOWLEDGE BASE</a>
+                </div>
+            </div>
+
+            <a class="chev" href="#slide-1" aria-label="Scroll down to the pitch deck">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M6 9l6 6 6-6"></path>
+                </svg>
+            </a>
+        </section>
+
+        <!-- ============================================================ deck
+             The public pitch deck, slides 1-15, as rendered images. Each
+             figure pairs a short alt with the slide's real copy as structured
+             off-screen HTML — visitors see the artwork; screen readers and
+             search engines get the argument. -->
+        <div class="deck" aria-label="The EAS pitch deck">
+            <div class="rotate-hint">best viewed landscape — turn your phone</div>
+
+            <section class="slide snap" id="slide-1">
+                <figure>
+                    <img src="./assets/deck/slide-01-2160.webp"
+                        srcset="./assets/deck/slide-01-1440.webp 1440w, ./assets/deck/slide-01-2160.webp 2160w, ./assets/deck/slide-01-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Title slide: the Sunship in flight. Investor and partner deck, 2026.">
+                    <figcaption class="visually-hidden">
+                        <h2>Electric Air Shipping — investor &amp; partner deck, 2026</h2>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-2">
+                <figure>
+                    <img src="./assets/deck/slide-02-2160.webp"
+                        srcset="./assets/deck/slide-02-1440.webp 1440w, ./assets/deck/slide-02-2160.webp 2160w, ./assets/deck/slide-02-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Diagram comparing a conventional cigar airship to the Sunship inside their bounding spheres.">
+                    <figcaption class="visually-hidden">
+                        <h2>Most large airships ever built have been the wrong shape.</h2>
+                        <p>Not underpowered. Not badly engineered. An airship is a machine for enclosing volume,
+                            and a cigar is one of the worst shapes for the job.</p>
+                        <p>Conventional cigar: VS 25, volume efficiency about 3%. Sunship: VS 1.6, volume
+                            efficiency about 60%.</p>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-3">
+                <figure>
+                    <img src="./assets/deck/slide-03-2160.webp"
+                        srcset="./assets/deck/slide-03-1440.webp 1440w, ./assets/deck/slide-03-2160.webp 2160w, ./assets/deck/slide-03-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Three columns: ocean shipping, international air freight, and the missing middle between them.">
+                    <figcaption class="visually-hidden">
+                        <h2>Over-ocean freight is trapped between two bad options. Both are getting worse.</h2>
+                        <ul>
+                            <li>Ocean shipping: about 1 gigatonne of CO2 emitted annually — 3% of the global total.</li>
+                            <li>International air freight: about 50 times the CO2 per tonne-kilometre of ocean
+                                shipping. Fast but expensive.</li>
+                            <li>The missing middle: no scalable, sustainable option between them.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-4">
+                <figure>
+                    <img src="./assets/deck/slide-04-2160.webp"
+                        srcset="./assets/deck/slide-04-1440.webp 1440w, ./assets/deck/slide-04-2160.webp 2160w, ./assets/deck/slide-04-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="The opportunity, in three numbered points.">
+                    <figcaption class="visually-hidden">
+                        <h2>The industry has wanted one thing for 50 years: air-freight speed at near
+                            ocean-freight cost.</h2>
+                        <ul>
+                            <li>Materially faster than ships — days, not weeks, across an ocean.</li>
+                            <li>Far cheaper than air freight — a fraction of the cost per tonne.</li>
+                            <li>Zero emissions — no lifting gas, no fuel burn.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-5">
+                <figure>
+                    <img src="./assets/deck/slide-05-2160.webp"
+                        srcset="./assets/deck/slide-05-1440.webp 1440w, ./assets/deck/slide-05-2160.webp 2160w, ./assets/deck/slide-05-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Three historical failure causes: helium, hydrogen, constant buoyancy.">
+                    <figcaption class="visually-hidden">
+                        <h2>Airships have been tried for 200 years. The reason they failed has been misdiagnosed.</h2>
+                        <ul>
+                            <li>Helium — scarce, expensive, and a finite resource.</li>
+                            <li>Hydrogen — lifts well, but dangerous. No modern regulator will certify it.</li>
+                            <li>Constant buoyancy — makes landing, mooring and cargo exchange genuinely hard.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-6">
+                <figure>
+                    <img src="./assets/deck/slide-06-2160.webp"
+                        srcset="./assets/deck/slide-06-1440.webp 1440w, ./assets/deck/slide-06-2160.webp 2160w, ./assets/deck/slide-06-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Sphere, Sunship and cigar compared: volume efficiency against the ability to fly straight.">
+                    <figcaption class="visually-hidden">
+                        <h2>We found the right shape, and built the mathematics to prove it.</h2>
+                        <p>A sphere is all volume but cannot fly straight. A cigar flies straight but encloses
+                            almost nothing. The right answer sits between them: the gömböc-like Sunship form —
+                            VS around 1.6, volume efficiency around 60%.</p>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-7">
+                <figure>
+                    <img src="./assets/deck/slide-07-2160.webp"
+                        srcset="./assets/deck/slide-07-1440.webp 1440w, ./assets/deck/slide-07-2160.webp 2160w, ./assets/deck/slide-07-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="The Sunship with its headline specification figures.">
+                    <figcaption class="visually-hidden">
+                        <h2>Ultra-heavy-lift cargo flight on hot air alone. No helium. No hydrogen.</h2>
+                        <ul>
+                            <li>Cruise speed: about 120 km/h.</li>
+                            <li>Payload class: 500 to 12,000 tonnes.</li>
+                            <li>Range: trans-oceanic.</li>
+                            <li>Payload advantage: 19× a conventional airship of the same maximum size.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-8">
+                <figure>
+                    <img src="./assets/deck/slide-08-2160.webp"
+                        srcset="./assets/deck/slide-08-1440.webp 1440w, ./assets/deck/slide-08-2160.webp 2160w, ./assets/deck/slide-08-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Three new cargo categories, numbered one to three.">
+                    <figcaption class="visually-hidden">
+                        <h2>Sunship creates three cargo categories that no aircraft can serve today.</h2>
+                        <p>Conventional air freight moves existing goods faster. Sunship opens entirely new
+                            freight classes, defined by volume, not speed.</p>
+                        <ul>
+                            <li>Atmospheric water collection — water-stressed markets pay $5–50 per cubic metre
+                                delivered. No aircraft has the volume-to-value ratio to make water a cargo.</li>
+                            <li>Hydrogen transport — hydrogen's constraint is distribution, not production; bulk
+                                delivery to pipeline-dark markets becomes viable as green supply scales.</li>
+                            <li>Dynamic spot markets — no fixed routes, no hub dependency: disaster relief, mine
+                                builds, agricultural surges.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-9">
+                <figure>
+                    <img src="./assets/deck/slide-09-2160.webp"
+                        srcset="./assets/deck/slide-09-1440.webp 1440w, ./assets/deck/slide-09-2160.webp 2160w, ./assets/deck/slide-09-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="The Sunship's five supporting systems, labelled.">
+                    <figcaption class="visually-hidden">
+                        <h2>Supporting systems are enabled by existing technology.</h2>
+                        <ul>
+                            <li>Thermal envelope — Pyrogel aerogel insulation: commercial, lightweight, rated
+                                well beyond the temperatures involved.</li>
+                            <li>Heating — grid-charged thermal batteries. A very large, very efficient air
+                                fryer. Electric, not fuel-burning.</li>
+                            <li>Structure — a rigid-geodesic frame in densified wood and composite.</li>
+                            <li>Propulsion — hydrogen fuel cells. Zero emissions in flight.</li>
+                            <li>Drag — boundary-layer ingestion and an adaptive rear mast.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-10">
+                <figure>
+                    <img src="./assets/deck/slide-10-2160.webp"
+                        srcset="./assets/deck/slide-10-1440.webp 1440w, ./assets/deck/slide-10-2160.webp 2160w, ./assets/deck/slide-10-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Four validation points: wind-tunnel tested, published, protected, backed.">
+                    <figcaption class="visually-hidden">
+                        <h2>Our patent-pending breakthrough design, with early validation.</h2>
+                        <ul>
+                            <li>Wind-tunnel tested — core aerodynamic assumptions validated; independently
+                                assessed at TRL 3.</li>
+                            <li>Published — the full mathematics, with a front-cover feature in Airship, the
+                                Airship Association journal.</li>
+                            <li>Protected — patent pending in Australia, registered designs filed,
+                                international PCT filing underway.</li>
+                            <li>Backed — accepted into Stone &amp; Chalk; academic advisor Dr Iran Sanadzadeh,
+                                University of Adelaide.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-11">
+                <figure>
+                    <img src="./assets/deck/slide-11-2160.webp"
+                        srcset="./assets/deck/slide-11-1440.webp 1440w, ./assets/deck/slide-11-2160.webp 2160w, ./assets/deck/slide-11-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Business model diagram: port-to-port, over-ocean, zero-emission, direct.">
+                    <figcaption class="visually-hidden">
+                        <h2>Electric Air Shipping does not sell airships. We will operate the freight layer.</h2>
+                        <ul>
+                            <li>Buy capacity, not aircraft — customers book space on a route, the way they buy
+                                ocean or air freight today.</li>
+                            <li>Plugs into existing ports — works with current land logistics; no new global
+                                infrastructure required first.</li>
+                            <li>Earns carbon credits on every over-ocean leg, growing as the IMO framework
+                                tightens toward 2050.</li>
+                            <li>Target around 10¢ per tonne-km — ship-like cost, a fraction of the time, none
+                                of the emissions.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-12">
+                <figure>
+                    <img src="./assets/deck/slide-12-2160.webp"
+                        srcset="./assets/deck/slide-12-1440.webp 1440w, ./assets/deck/slide-12-2160.webp 2160w, ./assets/deck/slide-12-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Chart plotting airship programs by design efficiency and capital, with the Sunship alone in the upper band.">
+                    <figcaption class="visually-hidden">
+                        <h2>A blue ocean inside a massive TAM — and every current player is on the wrong design.</h2>
+                        <ul>
+                            <li>Sea cargo market: $1.95 trillion. Air cargo market: $335 billion annually.</li>
+                            <li>Conventional programs cluster in the low-efficiency band, however large they grow.</li>
+                            <li>EAS competes on design, not capital.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-13">
+                <figure>
+                    <img src="./assets/deck/slide-13-2160.webp"
+                        srcset="./assets/deck/slide-13-1440.webp 1440w, ./assets/deck/slide-13-2160.webp 2160w, ./assets/deck/slide-13-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="Five-stage roadmap from today to fleet, with TRL levels.">
+                    <figcaption class="visually-hidden">
+                        <h2>One route. One payload. Then scale. Capital-light by design.</h2>
+                        <ul>
+                            <li>Today — wind-tunnel proven, conceptual design complete, patent pending. TRL 3.</li>
+                            <li>This round — watertight IP, Calculator V2, small-scale prototypes, partnerships.</li>
+                            <li>Design partners — each subsystem de-risked and demonstrated with partners.</li>
+                            <li>First route — real cargo on one over-ocean green corridor.</li>
+                            <li>Fleet — scale with licensed manufacturing; the freight layer goes live. TRL 9.</li>
+                        </ul>
+                        <p>Lift scales with volume, so a Sunship gets more efficient as it grows. The plan proves
+                            the shape cheaply, then scales with manufacturing partners.</p>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-14">
+                <figure>
+                    <img src="./assets/deck/slide-14-2160.webp"
+                        srcset="./assets/deck/slide-14-1440.webp 1440w, ./assets/deck/slide-14-2160.webp 2160w, ./assets/deck/slide-14-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="The founding team, advisors, and intellectual property position.">
+                    <figcaption class="visually-hidden">
+                        <h2>Outsiders redesigned the airship because insiders never thought to.</h2>
+                        <ul>
+                            <li>Toby Brandenburg, co-founder and R&amp;D lead — designed the VS/VE framework and
+                                the Sunship. Lifelong airship researcher.</li>
+                            <li>Brian Brandenburg, co-founder and director — economist by training, ten-plus
+                                years driving the project.</li>
+                            <li>Advisors and support — Frazer Dempsey, creative technologist; Dr Iran
+                                Sanadzadeh, academic advisor; advisory board forming; fractional CFO/CEO/CTO hiring.</li>
+                            <li>IP — patent pending (AU 2026902104), registered designs filed, international
+                                PCT underway, trademarks to follow.</li>
+                        </ul>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section class="slide snap" id="slide-15">
+                <figure>
+                    <img src="./assets/deck/slide-15-2160.webp"
+                        srcset="./assets/deck/slide-15-1440.webp 1440w, ./assets/deck/slide-15-2160.webp 2160w, ./assets/deck/slide-15-2880.webp 2880w"
+                        sizes="100vw" width="2880" height="1620" loading="lazy"
+                        alt="The Sunship over the ocean at sunset. The sustainable middle option for global freight. Join us.">
+                    <figcaption class="visually-hidden">
+                        <h2>The sustainable middle option for global freight.</h2>
+                        <p>And a first step toward much more. Join us.</p>
+                    </figcaption>
+                </figure>
+            </section>
+        </div>
+
+        <!-- ==================================================== closing panel
+             Its own dark panel rather than buttons floated over the last
+             slide, so it is readable at every screen size and gives the deck
+             a clear end. -->
+        <section class="closing snap" aria-label="What next">
+            <img class="lockup" src="./assets/logo.svg" alt="">
+            <div class="closing-actions">
+                <a class="btn btn-primary" target="_blank" rel="noopener"
+                    href="https://drive.google.com/file/d/1j3zN5wPRL4vD6RBr7XTnyx6hq1u_tfNi/view">DOWNLOAD THE DECK</a>
+                <a class="btn btn-secondary" href="/knowledgebase">EXPLORE THE KNOWLEDGE BASE</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script src="./assets/newsletter.js" defer></script>
+    <script>
+        /* Attach the four rotating hero layers AFTER window load, staggered,
+         * so they can never compete with the lead image for first-paint
+         * bandwidth. loading="lazy" cannot do this: it only defers images
+         * below the viewport, and these are stacked inside it. */
+        addEventListener('load', () => {
+            const need = Math.round(innerWidth * Math.min(devicePixelRatio || 1, 2));
+            document.querySelectorAll('.hero-layer').forEach((layer, i) => {
+                const widths = layer.dataset.widths.split(',').map(Number);
+                const w = widths.find((x) => x >= need) ?? widths[widths.length - 1];
+                setTimeout(() => {
+                    layer.style.backgroundImage =
+                        `url(./assets/hero/${layer.dataset.slug}-${w}.webp)`;
+                }, i * 400);
+            });
+        });
+    </script>
 </body>
+
 </html>
