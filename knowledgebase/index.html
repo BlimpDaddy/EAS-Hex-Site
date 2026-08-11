@@ -221,11 +221,10 @@
             stroke-width: 0.25px;
         }
 
-        /* The spinning shapes are an animated WebP, not a <video>: iOS Safari
-           plays alpha webm WITHOUT its transparency (a black box), but it
-           renders animated WebP alpha correctly — as does everything else.
-           One asset, identical behaviour everywhere. Master webm kept in
-           CodeEverything/Media/. */
+        /* The spinning shapes: an alpha webm <video> for most browsers, which
+           Safari alone swaps for an animated WebP <img> (see the script by
+           the element) — Safari plays alpha webm without its transparency.
+           This class covers both elements. */
         .hex-anim {
             display: block;
             width: 50%;
@@ -300,7 +299,25 @@
         </div>
     </div>
 
-    <img src="../assets/render-anim.webp" alt="" class="hex hex-anim">
+    <video src="../assets/render.webm" autoplay loop muted playsinline class="hex hex-anim"></video>
+    <script>
+        /* WebKit plays the alpha webm WITHOUT transparency — a black box —
+           and on iOS EVERY browser is WebKit underneath, Chrome and Firefox
+           included. All of them render animated WebP alpha correctly, so
+           iOS devices and desktop Safari get the WebP (heavier at 4.9MB, but
+           the only version that looks right there). Everything else keeps
+           the 2MB webm at its native smoothness. A false positive only costs
+           the extra MB. iPads reporting as Mac land on the Safari branch. */
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)
+            || /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent)) {
+            const v = document.querySelector('.hex-anim');
+            const img = document.createElement('img');
+            img.src = '../assets/render-anim.webp';
+            img.alt = '';
+            img.className = v.className;
+            v.replaceWith(img);
+        }
+    </script>
     <svg viewBox="0 0 100 100" class="hex" aria-label="Six-point knowledge base navigation">
         <path class="path-bg" d="M30 15.359 H70 L90 50 L70 84.641 H30 L10 50 Z"></path>
         <path class="path-animate" d="M30 15.359 H70 L90 50 L70 84.641 H30 L10 50 Z"></path>
