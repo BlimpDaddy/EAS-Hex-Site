@@ -242,6 +242,16 @@
                 width: 100vw;
                 max-width: 100vw;
             }
+
+            /* The video must stay INSIDE the orange portal circle. The circle
+               is 55% of the hexagon's rendered size; the video's black
+               background only stays invisible while every pixel of it sits
+               against the dark page centre. 45% of the same constraints keeps
+               both dimensions under the circle on any phone geometry. */
+            video.hex {
+                width: min(45vw, 45%);
+                height: min(45vw, 45%);
+            }
         }
 
         @media (pointer: coarse) {

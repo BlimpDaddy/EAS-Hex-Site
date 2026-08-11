@@ -254,7 +254,7 @@
            Reserving bar height there wastes the whole point of rotating, so
            the translucent bar overlays the slide edges instead and the slide
            takes the full height. */
-        @media (orientation: landscape) and (max-height: 520px) {
+        @media (orientation: landscape) and (max-height: 620px) {
             .slide {
                 padding-top: 0;
             }
@@ -302,15 +302,22 @@
         }
 
         /* The two calls to action from the top bar, repeated as the deck's
-           payoff: berry pair stacked on the left, knowledge base beside. */
+           payoff — horizontal, echoing the bar itself. */
         .closing-stack {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 0.9rem;
         }
 
         .closing-stack .btn {
             text-align: center;
+        }
+
+        /* Two lines so the button stays compact beside the berry pair. */
+        .btn-twoline {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.3;
         }
 
         /* --------------------------------------------------- reduced motion */
@@ -668,7 +675,7 @@
                     <a class="btn btn-primary" href="mailto:contact@electricairshipping.com">CONTACT</a>
                     <a class="btn btn-primary" href="#" data-nl-open>RECEIVE</a>
                 </div>
-                <a class="btn btn-secondary" href="/knowledgebase">EXPLORE THE KNOWLEDGE BASE</a>
+                <a class="btn btn-secondary btn-twoline" href="/knowledgebase">EXPLORE THE<br>KNOWLEDGE BASE</a>
             </div>
         </section>
     </main>
