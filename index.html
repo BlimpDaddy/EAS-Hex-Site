@@ -62,10 +62,15 @@
 
         /* ------------------------------------------------------------ hero */
 
+        /* svh, not dvh: dvh changes as the mobile URL bar hides and shows,
+           which re-lays-out every full-height section MID-SCROLL — the page
+           visibly stutters between slides. svh is the stable small size; the
+           cost is a sliver of letterbox when the URL bar is collapsed, the
+           gain is that nothing moves under the visitor's thumb. */
         .hero {
             position: relative;
             min-height: 100vh;
-            min-height: 100dvh;   /* mobile URL bars resize the viewport; dvh tracks it */
+            min-height: 100svh;
             overflow: hidden;
         }
 
@@ -219,7 +224,7 @@
 
         .slide {
             min-height: 100vh;
-            min-height: 100dvh;
+            min-height: 100svh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -239,10 +244,34 @@
             display: block;
             max-width: 100%;
             max-height: calc(100vh - var(--bar-h));
-            max-height: calc(100dvh - var(--bar-h));
+            max-height: calc(100svh - var(--bar-h));
             width: auto;
             height: auto;
             object-fit: contain;
+        }
+
+        /* A rotated phone is a 16:9-ish viewport — the slides' own shape.
+           Reserving bar height there wastes the whole point of rotating, so
+           the translucent bar overlays the slide edges instead and the slide
+           takes the full height. */
+        @media (orientation: landscape) and (max-height: 520px) {
+            .slide {
+                padding-top: 0;
+            }
+
+            .slide img {
+                max-height: 100vh;
+                max-height: 100svh;
+            }
+        }
+
+        /* Phones get decisive snapping: momentum flicks always come to rest
+           on a slide, never between two. Desktop keeps proximity so trackpad
+           browsing is never fought. */
+        @media (pointer: coarse) {
+            html {
+                scroll-snap-type: y mandatory;
+            }
         }
 
         /* --------------------------------------------------------- closing */
@@ -269,6 +298,19 @@
             flex-wrap: wrap;
             gap: 0.9rem;
             justify-content: center;
+            align-items: center;
+        }
+
+        /* The two calls to action from the top bar, repeated as the deck's
+           payoff: berry pair stacked on the left, knowledge base beside. */
+        .closing-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        .closing-stack .btn {
+            text-align: center;
         }
 
         /* --------------------------------------------------- reduced motion */
@@ -293,7 +335,7 @@
 <body>
     <header class="topbar">
         <a class="topbar-home" href="/" aria-label="Electric Air Shipping — home">
-            <img src="./assets/logo.svg" alt="Electric Air Shipping">
+            <img src="./assets/logo-berry-white.svg" alt="Electric Air Shipping">
         </a>
         <nav class="topbar-nav">
             <a href="mailto:contact@electricairshipping.com">CONTACT</a>
@@ -622,8 +664,10 @@
         <section class="closing snap" aria-label="What next">
             <img class="lockup" src="./assets/logo.svg" alt="">
             <div class="closing-actions">
-                <a class="btn btn-primary" target="_blank" rel="noopener"
-                    href="https://drive.google.com/file/d/1j3zN5wPRL4vD6RBr7XTnyx6hq1u_tfNi/view">DOWNLOAD THE DECK</a>
+                <div class="closing-stack">
+                    <a class="btn btn-primary" href="mailto:contact@electricairshipping.com">CONTACT</a>
+                    <a class="btn btn-primary" href="#" data-nl-open>RECEIVE</a>
+                </div>
                 <a class="btn btn-secondary" href="/knowledgebase">EXPLORE THE KNOWLEDGE BASE</a>
             </div>
         </section>

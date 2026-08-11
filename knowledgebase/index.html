@@ -37,10 +37,14 @@
         /* The fixed top bar sits above this grid. Padding rather than a grid
            row so the hexagon's proportions are untouched; box-sizing keeps it
            inside the 100% height. */
+        /* The text row is minmax'd, not fr'd: an fr row grows as the heading
+           wraps to two or three lines, which visibly resizes the hexagon
+           every time a vertex with longer copy is tapped. Reserving three
+           lines' worth up front keeps the hexagon still. */
         body {
             padding-top: var(--bar-h);
             display: grid;
-            grid-template-rows: var(--pad) 1fr var(--pad) 10fr var(--pad);
+            grid-template-rows: var(--pad) minmax(10rem, auto) var(--pad) 1fr var(--pad);
             grid-template-columns: var(--pad) 1fr var(--pad);
             grid-template-areas:
                 ".... .... ...."
@@ -225,13 +229,41 @@
             min-height: 0;
             object-fit: contain;
         }
+
+        /* Phone: the hexagon runs edge to edge, the heading drops a size so
+           it wraps less, and the vertex circles grow into honest tap targets
+           (r is a presentation property — settable from CSS on SVG2). */
+        @media (max-width: 700px) {
+            .text .title {
+                font-size: 1.6rem;
+            }
+
+            svg.hex {
+                width: 100vw;
+                max-width: 100vw;
+            }
+        }
+
+        @media (pointer: coarse) {
+            .circle-select {
+                r: 10px;
+            }
+
+            .circle-select.selected {
+                r: 10.5px;
+            }
+
+            svg>text {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 
 <body>
     <header class="topbar">
         <a class="topbar-home" href="/" aria-label="Electric Air Shipping — home">
-            <img src="../assets/logo.svg" alt="Electric Air Shipping">
+            <img src="../assets/logo-berry-white.svg" alt="Electric Air Shipping">
         </a>
         <nav class="topbar-nav">
             <a href="mailto:contact@electricairshipping.com">CONTACT</a>
