@@ -96,12 +96,16 @@
     display: block;
 }
 
+/* Interface chrome is Genos — the brand face, matching the hex page and the
+   calculator. Geist is reserved for reading text (the hero headline and
+   sub-line, which echo slide 15's own typography). */
 .topbar-nav {
     display: flex;
     align-items: center;
     gap: clamp(0.9rem, 3vw, 2rem);
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
+    font-family: Genos, system-ui, sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
 }
 
 .topbar-nav a {
@@ -150,8 +154,8 @@
     flex-direction: column;
     gap: 1rem;
     width: min(90vw, 26rem);
-    font-family: Geist, system-ui, sans-serif;
-    font-size: 1.05rem;
+    font-family: Genos, system-ui, sans-serif;
+    font-size: 1.3rem;
     color: var(--berry);
 }
 

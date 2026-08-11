@@ -153,11 +153,12 @@
 
         .btn {
             display: inline-block;
-            padding: 0.85em 1.6em;
+            padding: 0.7em 1.5em;
             border-radius: 0.3rem;
-            font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+            font-family: Genos, system-ui, sans-serif;   /* chrome = Genos */
+            font-size: clamp(1.05rem, 1.8vw, 1.25rem);
             font-weight: 500;
-            letter-spacing: 0.09em;
+            letter-spacing: 0.07em;
             text-decoration: none;
             white-space: nowrap;
         }
@@ -242,32 +243,6 @@
             width: auto;
             height: auto;
             object-fit: contain;
-        }
-
-        /* One line, only where it earns its place: narrow portrait screens,
-           where people with rotation lock on would otherwise conclude the
-           site is broken. Sticky inside the deck, so it never overlays the
-           hero or the closing panel. */
-        .rotate-hint {
-            display: none;
-            position: sticky;
-            top: calc(var(--bar-h) + 0.6rem);
-            z-index: 5;
-            width: fit-content;
-            margin: 0 auto -2.2rem;
-            padding: 0.35em 1em;
-            border-radius: 1em;
-            background: rgba(17, 17, 17, 0.7);
-            color: var(--muted);
-            font-size: 0.8rem;
-            letter-spacing: 0.06em;
-            pointer-events: none;
-        }
-
-        @media (orientation: portrait) and (max-width: 700px) {
-            .rotate-hint {
-                display: block;
-            }
         }
 
         /* --------------------------------------------------------- closing */
@@ -365,8 +340,6 @@
              off-screen HTML — visitors see the artwork; screen readers and
              search engines get the argument. -->
         <div class="deck" aria-label="The EAS pitch deck">
-            <div class="rotate-hint">best viewed landscape — turn your phone</div>
-
             <section class="slide snap" id="slide-1">
                 <figure>
                     <img src="./assets/deck/slide-01-2160.webp"
@@ -659,6 +632,31 @@
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script src="./assets/newsletter.js" defer></script>
     <script>
+        /* Anchor buttons (EXPLORE, chevron): Chromium cancels smooth anchor
+         * navigation when scroll-snap sits on the root — the snap pulls back
+         * to the nearest point, which is still the hero, so the click appears
+         * to do nothing. Workaround: lift the snap for the duration of the
+         * browser's own scrollIntoView, restore it when scrolling ends. The
+         * scrolling itself stays native — this is not scroll-jacking. */
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+        document.querySelectorAll('a[href^="#"]').forEach((a) => {
+            a.addEventListener('click', (e) => {
+                const target = document.getElementById(a.hash.slice(1));
+                if (!target) return;
+                e.preventDefault();
+                const root = document.documentElement;
+                root.style.scrollSnapType = 'none';
+                const restore = () => {
+                    root.style.scrollSnapType = '';
+                    removeEventListener('scrollend', restore);
+                };
+                addEventListener('scrollend', restore);
+                setTimeout(restore, 1500);   /* scrollend fallback */
+                history.pushState(null, '', a.hash);
+                target.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth' });
+            });
+        });
+
         /* Attach the four rotating hero layers AFTER window load, staggered,
          * so they can never compete with the lead image for first-paint
          * bandwidth. loading="lazy" cannot do this: it only defers images
