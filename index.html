@@ -253,15 +253,22 @@
         /* A rotated phone is a 16:9-ish viewport — the slides' own shape.
            Reserving bar height there wastes the whole point of rotating, so
            the translucent bar overlays the slide edges instead and the slide
-           takes the full height. */
-        @media (orientation: landscape) and (max-height: 620px) {
+           takes the full height. Keyed on pointer:coarse + orientation, NOT
+           a pixel height cutoff — height thresholds proved unreliable on a
+           real iPhone (whose reported landscape height defied the 520/620px
+           nets), while "touch device, rotated" is exactly the intent. */
+        @media (pointer: coarse) and (orientation: landscape) {
             .slide {
                 padding-top: 0;
             }
 
             .slide img {
-                max-height: 100vh;
-                max-height: 100svh;
+                height: 100vh;
+                height: 100svh;
+                max-height: none;
+                width: auto;
+                max-width: 100vw;
+                object-fit: contain;
             }
         }
 

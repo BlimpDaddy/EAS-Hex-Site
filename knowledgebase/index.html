@@ -228,6 +228,11 @@
             min-width: 0;
             min-height: 0;
             object-fit: contain;
+            /* iOS Safari plays the alpha webm WITHOUT transparency — a black
+               rectangle. Clipped round, that failure renders as a dark disc
+               concentric with the orange portal: it reads as designed. On
+               browsers with working alpha the clip changes nothing visible. */
+            border-radius: 50%;
         }
 
         /* Phone: the hexagon runs edge to edge, the heading drops a size so
