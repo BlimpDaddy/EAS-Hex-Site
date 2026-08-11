@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base — Electric Air Shipping</title>
+    <meta name="description"
+        content="The Electric Air Shipping knowledge base: the pitch deck, the interactive fleet calculator, the Vision whitepaper, the Shape-Volume Scalar paper, and the full Sunship conceptual design.">
+    <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/site.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --pad: 1rem;
+            --border: 0.25rem;
+            --circlesize: 4rem;
+            --FULL_LENGTH: 240;
+            --SEG_LENGTH: 40;
+            --pink: var(--berry);
+            --gray: #777;
+        }
+
+        html,
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--fg);
+            height: 100%;
+            font-family: Genos;
+            max-height: 2000px;
+        }
+
+        /* The fixed top bar sits above this grid. Padding rather than a grid
+           row so the hexagon's proportions are untouched; box-sizing keeps it
+           inside the 100% height. */
+        body {
+            padding-top: var(--bar-h);
+            display: grid;
+            grid-template-rows: var(--pad) 1fr var(--pad) 10fr var(--pad);
+            grid-template-columns: var(--pad) 1fr var(--pad);
+            grid-template-areas:
+                ".... .... ...."
+                ".... text ...."
+                ".... .... ...."
+                ".... main ...."
+                ".... .... ....";
+        }
+
+        .text-container-container {
+            grid-area: text;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .text-container {
+            display: flex;
+        }
+
+        .text-spacer-left {
+            width: 2rem;
+            flex-shrink: 0;
+        }
+
+        .text-spacer-right {
+            width: 2rem;
+            flex-shrink: 0;
+        }
+
+        .text-text {
+            flex-grow: 1;
+            border: 0.25rem solid #222;
+            border-radius: 0.25rem;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .text-number {
+            position: absolute;
+            border: var(--border) solid #222;
+            border-radius: 50%;
+            width: 4rem;
+            height: 4rem;
+            left: calc((var(--circlesize) + var(--border))/-2);
+            bottom: calc(50% - 2rem);
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .text-number>span {
+            font-size: 3rem;
+            color: var(--pink);
+            transform: translateY(-0.2rem);
+        }
+
+        .text {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .text .subtitle {
+            font-size: 1.5rem;
+        }
+
+        .hyperlink {
+            color: var(--pink);
+        }
+
+        .hyperlink:hover {
+            color: var(--orange);
+        }
+
+        .hex {
+            grid-area: main;
+            justify-self: center;
+            align-self: center;
+        }
+
+        .bg-img {
+            grid-area: main;
+            display: block;
+            max-width: 100%;
+            max-height: 80%;
+            justify-self: center;
+            align-self: center;
+        }
+
+        p,
+        h1 {
+            margin: 0;
+        }
+
+        @media (min-width: 800px) {
+            body {
+                grid-template-rows: var(--pad) 2fr var(--pad) 10fr calc(var(--pad)*2);
+                grid-template-columns: var(--pad) 1fr 3fr 1fr var(--pad);
+                grid-template-areas:
+                    ".... .... .... .... ...."
+                    ".... .... text .... ...."
+                    ".... .... .... .... ...."
+                    ".... main main main ...."
+                    ".... .... .... .... ....";
+            }
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .path-animate {
+            transition: stroke-dashoffset 1s ease-out;
+            stroke-dasharray: var(--FULL_LENGTH);
+            stroke-dashoffset: 240;
+            fill: none;
+            stroke: var(--pink);
+            stroke-width: 0.5px;
+        }
+
+        .path-bg {
+            stroke: var(--gray);
+            stroke-width: 0.5px;
+            fill: none;
+        }
+
+        .path0 { stroke-dashoffset: 240; }
+        .path1 { stroke-dashoffset: 200; }
+        .path2 { stroke-dashoffset: 160; }
+        .path3 { stroke-dashoffset: 120; }
+        .path4 { stroke-dashoffset: 80; }
+        .path5 { stroke-dashoffset: 0; }
+
+        .circle-select {
+            transition: stroke 1s;
+            transition: r 1s;
+            fill: var(--bg);
+            stroke: var(--gray);
+            stroke-width: 0.5px;
+            r: 7.5px;
+        }
+
+        .circle-select:hover {
+            cursor: pointer;
+        }
+
+        .circle-select.selected {
+            transition: stroke 3s;
+            r: 8px;
+            stroke: var(--pink);
+        }
+
+        .selected-text {
+            fill: var(--pink)
+        }
+
+        svg>text {
+            transition: fill 1s;
+            pointer-events: none;
+            fill: var(--gray);
+            font-size: 10px;
+            font-family: Genos;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .video-portal {
+            fill: none;
+            stroke: orange;
+            stroke-width: 0.25px;
+        }
+
+        video {
+            display: block;
+            width: 50%;
+            height: 50%;
+            min-width: 0;
+            min-height: 0;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="topbar-home" href="/" aria-label="Electric Air Shipping — home">
+            <img src="../assets/logo.svg" alt="Electric Air Shipping">
+        </a>
+        <nav class="topbar-nav">
+            <a href="mailto:contact@electricairshipping.com">CONTACT</a>
+            <a href="#" data-nl-open>RECEIVE</a>
+        </nav>
+    </header>
+
+    <img class="bg-img" src="../assets/bg.svg" alt="">
+    <div class="text-container-container">
+        <div class="text-container">
+            <div class="text-spacer-left"></div>
+            <div class="text-text">
+                <div class="text-number">
+                    <span data-id="text-number">1</span>
+                </div>
+                <div class="text-spacer-right"></div>
+                <div class="text">
+                    <h1 data-id="title" class="title">Welcome to the Electric Air Shipping project!</h1>
+                    <p data-id="subtitle" class="subtitle">Please explore our knowledge base.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <video src="../assets/render.webm" autoplay loop muted playsinline class="hex"></video>
+    <svg viewBox="0 0 100 100" class="hex" aria-label="Six-point knowledge base navigation">
+        <path class="path-bg" d="M30 15.359 H70 L90 50 L70 84.641 H30 L10 50 Z"></path>
+        <path class="path-animate" d="M30 15.359 H70 L90 50 L70 84.641 H30 L10 50 Z"></path>
+        <circle class="circle-select selected" data-circle="0" cx="30" cy="15.359"></circle>
+        <circle class="circle-select" data-circle="1" cx="70" cy="15.359"></circle>
+        <circle class="circle-select" data-circle="2" cx="90" cy="50"></circle>
+        <circle class="circle-select" data-circle="3" cx="70" cy="84.641"></circle>
+        <circle class="circle-select" data-circle="4" cx="30" cy="84.641"></circle>
+        <circle class="circle-select" data-circle="5" cx="10" cy="50"></circle>
+        <text class="selected-text" data-text="0" x="30" y="15.359">1</text>
+        <text data-text="1" x="70" y="15.359">2</text>
+        <text data-text="2" x="90" y="50">3</text>
+        <text data-text="3" x="70" y="84.641">4</text>
+        <text data-text="4" x="30" y="84.641">5</text>
+        <text data-text="5" x="10" y="50">6</text>
+        <circle class="video-portal" cx="50" cy="50" r="27.5"></circle>
+    </svg>
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script src="../assets/newsletter.js" defer></script>
+    <script>
+        /* The six knowledge base slots.
+         *
+         * These values used to be fetched live from a Google Sheet that
+         * overrode whatever was in this file. That existed from when the site
+         * was hosted by someone else and copy changes had to bypass a deploy.
+         * It is no longer needed, so the sheet's live values were captured here
+         * on 2026-08-11 and the fetch removed — along with a third-party
+         * request in the boot path of every page load.
+         *
+         * Note the whitepaper, maths paper and conceptual design have NO page
+         * counts. That was a deliberate edit; do not "restore" them.
+         */
+        const config = [
+            {
+                title: "Welcome to the Electric Air Shipping project!",
+                subtitle: "Please explore our knowledge base."
+            },
+            {
+                title: "Click here to:-",
+                subtitle: "See the <a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1j3zN5wPRL4vD6RBr7XTnyx6hq1u_tfNi/view'>EAS overview (Pitchdeck)</a>"
+            },
+            {
+                title: "Play with the:",
+                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://calc.electricairshipping.com'>Interactive EAS Fleet Calculator</a>"
+            },
+            {
+                title: "Read the:",
+                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1ARGSUN5e6wHadcO3wT6FCcmrhRsPxvbI/view'>Vision//Whitepaper</a>"
+            },
+            {
+                title: "Read the:",
+                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1_xdBSdVZ-B19MCYf1XynxpSxqAu0TEsW/view'>Maths &amp; Design paper</a>"
+            },
+            {
+                title: "View the full:",
+                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1juDWMVLPFUiWFjtf39verL0EClEMWSwl/view'>Sunship Conceptual Design</a>"
+            },
+        ];
+
+        const elements = {
+            path: document.querySelector(".path-animate"),
+            circles: document.querySelectorAll("[data-circle]"),
+            texts: document.querySelectorAll("[data-text]"),
+            title: document.querySelector('[data-id="title"]'),
+            subtitle: document.querySelector('[data-id="subtitle"]'),
+            currentNumber: document.querySelector('[data-id="text-number"]'),
+        };
+
+        function updateSelection(progressNumber) {
+            const n = Number(progressNumber);
+
+            for (let i = 0; i <= 5; i++) elements.path.classList.remove(`path${i}`);
+            elements.path.classList.add(`path${n}`);
+
+            for (const [i, text] of elements.texts.entries())
+                text.classList.toggle("selected-text", i <= n);
+
+            for (const [i, circle] of elements.circles.entries())
+                circle.classList.toggle("selected", i <= n);
+
+            elements.title.textContent = config[n].title;
+            elements.subtitle.innerHTML = config[n].subtitle;
+            elements.currentNumber.textContent = n + 1;
+        }
+
+        updateSelection(0);
+
+        for (const circle of elements.circles) {
+            circle.addEventListener("click", () => updateSelection(circle.dataset.circle));
+        }
+    </script>
+</body>
+
+</html>
