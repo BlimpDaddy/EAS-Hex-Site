@@ -90,12 +90,22 @@ function confirmationEmail(env, email, token, source) {
         wrap('<p>Hi there legend — you (or someone using this address) asked to receive the EAS newsletter.</p>' + button));
 }
 
-function codeEmail(env, email) {
+function codeEmail(env, email, joinToken) {
+  // No "again" — this path serves anyone already verified, including
+  // newsletter subscribers asking for the document the FIRST time.
+  //
+  // joinToken (present only when the row lacks newsletter consent) makes the
+  // invitation genuinely one-click: the address is already verified as this
+  // recipient's, so clicking IS express consent — no form, no re-entry.
+  const join = joinToken
+    ? `<p style="margin-top:1.5em">Want the story as it unfolds? <a href="https://electricairshipping.com/api/join?t=${joinToken}">Join the EAS newsletter</a> — one click, that's it.</p>`
+    : '';
   return sendEmail(env, email, 'Your EAS access code',
     wrap(
-      '<p>You asked nicely, again. Your access code:</p>' +
+      '<p>You asked nicely. Your access code:</p>' +
       `<p style="font-size:1.4em"><b>${env.GATE_PASSWORD}</b></p>` +
-      '<p>Use it on the <a href="https://electricairshipping.com/knowledgebase">EAS knowledge base</a>, point 6.</p>'
+      '<p>Use it on the <a href="https://electricairshipping.com/knowledgebase">EAS knowledge base</a>, point 6.</p>' +
+      join
     ));
 }
 
@@ -154,7 +164,18 @@ export async function onRequestPost({ request, env }) {
 
     if (existing && existing.verified) {
       if (source === 'design-doc') {
-        if (!env.GATE_PASSWORD || !(await codeEmail(env, email))) {
+        // If the row still lacks newsletter consent, the code email carries a
+        // one-click join link. The token is minted only for a verified row,
+        // so /api/join can treat the click as the address owner's consent.
+        let joinToken = null;
+        if (!Math.max(existing.nl_consent ?? 0, nlConsent)) {
+          joinToken = crypto.randomUUID();
+          await env.DB
+            .prepare('UPDATE newsletter SET token = ?2 WHERE email = ?1')
+            .bind(email, joinToken)
+            .run();
+        }
+        if (!env.GATE_PASSWORD || !(await codeEmail(env, email, joinToken))) {
           return Response.json({ ok: false, error: 'email' }, { status: 502 });
         }
         return Response.json({ ok: true, status: 'code-sent' });
