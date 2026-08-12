@@ -89,7 +89,7 @@
             const res = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ email, tsToken }),
+                body: JSON.stringify({ email, tsToken, source: 'newsletter' }),
             });
             const data = await res.json();
             if (data.ok) {

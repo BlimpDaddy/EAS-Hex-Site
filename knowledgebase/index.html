@@ -279,8 +279,8 @@
             <img src="../assets/logo-berry-white.svg" alt="Electric Air Shipping">
         </a>
         <nav class="topbar-nav">
-            <a href="mailto:contact@electricairshipping.com">CONTACT</a>
-            <a href="#" data-nl-open>RECEIVE</a>
+            <a href="mailto:contact@electricairshipping.com" data-track="contact">CONTACT</a>
+            <a href="#" data-nl-open data-track="receive">RECEIVE</a>
         </nav>
     </header>
 
@@ -338,8 +338,39 @@
         <circle class="video-portal" cx="50" cy="50" r="27.5"></circle>
     </svg>
 
+    <!-- Hex 6 access gate. Shares the newsletter modal's styles (.nl-*).
+         The gate is marketing theatre by design — the real payoff is the
+         ASK NICELY funnel; every request becomes a verified address. -->
+    <div class="nl-overlay" data-gate-overlay role="dialog" aria-modal="true" aria-label="Access required">
+        <div class="nl-box">
+            <div>Access required</div>
+            <div data-gate-step1>
+                <label class="visually-hidden" for="gate-pw">Access code</label>
+                <input id="gate-pw" type="password" placeholder="access code" data-gate-pw
+                    style="width:100%" autocomplete="off">
+            </div>
+            <div data-gate-step2 style="display:none">
+                <label class="visually-hidden" for="gate-email">Your email address</label>
+                <input id="gate-email" type="email" placeholder="your@email.com" data-gate-email
+                    style="width:100%">
+                <label style="display:flex;gap:0.5em;align-items:center;font-size:0.95rem;color:#eaeaea;margin-top:0.75rem">
+                    <input type="checkbox" data-gate-consent>
+                    also send me the EAS newsletter
+                </label>
+                <div data-gate-turnstile style="margin-top:0.75rem"></div>
+            </div>
+            <div class="nl-msg" data-gate-msg role="status" aria-live="polite"></div>
+            <div class="nl-actions">
+                <a data-gate-cancel tabindex="0" role="button">CANCEL</a>
+                <a data-gate-ask tabindex="0" role="button">ASK NICELY</a>
+                <a data-gate-ok tabindex="0" role="button">OK</a>
+            </div>
+        </div>
+    </div>
+
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script src="../assets/newsletter.js" defer></script>
+    <script src="../assets/analytics.js" defer></script>
     <script>
         /* The six knowledge base slots.
          *
@@ -376,9 +407,21 @@
             },
             {
                 title: "View the full:",
-                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1juDWMVLPFUiWFjtf39verL0EClEMWSwl/view'>Sunship Conceptual Design</a>"
+                // Slot 6 is gated. The document URL is deliberately NOT in
+                // this file — the server returns it only to a correct
+                // password (see /api/gate), and an unlocked device keeps it
+                // in localStorage. View-source reveals nothing.
+                subtitle: null,
             },
         ];
+
+        const DOC_KEY = 'eas_doc_url';
+        function slot6Subtitle() {
+            const url = localStorage.getItem(DOC_KEY);
+            return url
+                ? `<a target='_blank' rel='noopener' class='hyperlink' href='${url}'>Sunship Conceptual Design</a>`
+                : "<a class='hyperlink' href='#' data-gate-open>Sunship Conceptual Design</a>";
+        }
 
         const elements = {
             path: document.querySelector(".path-animate"),
@@ -402,7 +445,7 @@
                 circle.classList.toggle("selected", i <= n);
 
             elements.title.textContent = config[n].title;
-            elements.subtitle.innerHTML = config[n].subtitle;
+            elements.subtitle.innerHTML = n === 5 ? slot6Subtitle() : config[n].subtitle;
             elements.currentNumber.textContent = n + 1;
         }
 
@@ -411,6 +454,148 @@
         for (const circle of elements.circles) {
             circle.addEventListener("click", () => updateSelection(circle.dataset.circle));
         }
+
+        /* ------------------------------- the hex 6 access gate ------------ */
+        (() => {
+            // Same site-wide key the newsletter uses; registered to the domain.
+            const TURNSTILE_SITEKEY = '0x4AAAAAAEKubehZQp3K3TbK';
+
+            const overlay = document.querySelector('[data-gate-overlay]');
+            const step1 = document.querySelector('[data-gate-step1]');
+            const step2 = document.querySelector('[data-gate-step2]');
+            const pwIn = document.querySelector('[data-gate-pw]');
+            const emailIn = document.querySelector('[data-gate-email]');
+            const consent = document.querySelector('[data-gate-consent]');
+            const msg = document.querySelector('[data-gate-msg]');
+            const askBtn = document.querySelector('[data-gate-ask]');
+            const okBtn = document.querySelector('[data-gate-ok]');
+            let busy = false;
+            let tsWidget = null;
+
+            const setStep = (n) => {
+                step1.style.display = n === 1 ? '' : 'none';
+                step2.style.display = n === 2 ? '' : 'none';
+                askBtn.style.display = n === 1 ? '' : 'none';
+                okBtn.textContent = n === 1 ? 'OK' : 'SEND';
+                msg.textContent = '';
+                (n === 1 ? pwIn : emailIn).focus();
+            };
+
+            const open = () => {
+                overlay.classList.add('open');
+                setStep(1);
+            };
+            const close = () => {
+                if (busy) return;
+                overlay.classList.remove('open');
+            };
+
+            // The slot-6 link is re-rendered on every selection, so listen on
+            // the container, not the link.
+            elements.subtitle.addEventListener('click', (e) => {
+                const a = e.target.closest('[data-gate-open]');
+                if (a) { e.preventDefault(); open(); }
+            });
+
+            document.querySelector('[data-gate-cancel]').addEventListener('click', close);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+            pwIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') okBtn.click(); });
+            emailIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') okBtn.click(); });
+
+            askBtn.addEventListener('click', () => {
+                setStep(2);
+                if (tsWidget === null && window.turnstile) {
+                    tsWidget = window.turnstile.render(document.querySelector('[data-gate-turnstile]'), {
+                        sitekey: TURNSTILE_SITEKEY,
+                        theme: 'dark',
+                    });
+                }
+            });
+
+            const submitPassword = async () => {
+                busy = true;
+                msg.textContent = '…';
+                try {
+                    const res = await fetch('/api/gate', {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ password: pwIn.value }),
+                    });
+                    const data = await res.json();
+                    if (data.ok && data.url) {
+                        localStorage.setItem(DOC_KEY, data.url);
+                        if (window.easTrack) window.easTrack('gate_unlock');
+                        msg.textContent = 'Welcome ✓';
+                        updateSelection(5);   // slot 6 becomes a plain link on this device
+                        setTimeout(() => { busy = false; close(); window.open(data.url, '_blank', 'noopener'); }, 600);
+                        return;
+                    }
+                    msg.textContent = data.error === 'server'
+                        ? 'Something went wrong — please try again later.'
+                        : 'Access Denied';
+                } catch {
+                    msg.textContent = 'Something went wrong — please try again later.';
+                }
+                busy = false;
+            };
+
+            const submitAsk = async () => {
+                const email = emailIn.value.trim();
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+                    msg.textContent = 'Please enter a valid email address.';
+                    return;
+                }
+                const tsToken = window.turnstile && tsWidget !== null
+                    ? window.turnstile.getResponse(tsWidget) : '';
+                // The widget cannot pass on localhost (sitekey is domain-bound);
+                // the local mock server ignores the token anyway.
+                if (!tsToken && location.hostname !== 'localhost') {
+                    msg.textContent = 'Please complete the verification check.';
+                    return;
+                }
+                busy = true;
+                msg.textContent = 'Submitting…';
+                try {
+                    const res = await fetch('/api/waitlist', {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({
+                            email, tsToken,
+                            source: 'design-doc',
+                            nlConsent: consent.checked,
+                        }),
+                    });
+                    const data = await res.json();
+                    if (data.ok) {
+                        if (window.easTrack) window.easTrack('gate_ask');
+                        msg.textContent = data.status === 'code-sent'
+                            ? 'Code sent — check your email ✓'
+                            : 'Check your inbox to confirm ✓';
+                        emailIn.value = '';
+                        setTimeout(() => { busy = false; close(); }, 2600);
+                        return;
+                    }
+                    msg.textContent = data.error === 'invalid'
+                        ? 'Please enter a valid email address.'
+                        : data.error === 'turnstile'
+                            ? 'Verification failed — please try again.'
+                            : data.error === 'email'
+                                ? 'Couldn’t send the email — please try again later.'
+                                : 'Something went wrong — please try again later.';
+                    if (window.turnstile && tsWidget !== null) window.turnstile.reset(tsWidget);
+                } catch {
+                    msg.textContent = 'Something went wrong — please try again later.';
+                }
+                busy = false;
+            };
+
+            okBtn.addEventListener('click', () => {
+                if (busy) return;
+                if (step1.style.display !== 'none') submitPassword();
+                else submitAsk();
+            });
+        })();
     </script>
 </body>
 

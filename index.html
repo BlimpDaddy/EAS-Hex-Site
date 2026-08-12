@@ -352,8 +352,8 @@
             <img src="./assets/logo-berry-white.svg" alt="Electric Air Shipping">
         </a>
         <nav class="topbar-nav">
-            <a href="mailto:contact@electricairshipping.com">CONTACT</a>
-            <a href="#" data-nl-open>RECEIVE</a>
+            <a href="mailto:contact@electricairshipping.com" data-track="contact">CONTACT</a>
+            <a href="#" data-nl-open data-track="receive">RECEIVE</a>
         </nav>
     </header>
 
@@ -378,8 +378,8 @@
                 <h1>The sustainable middle option for global freight.</h1>
                 <p class="sub">And a first step toward much more. Join us.</p>
                 <div class="hero-actions">
-                    <a class="btn btn-primary" href="#slide-2">EXPLORE THE EAS PROJECT</a>
-                    <a class="btn btn-secondary" href="/knowledgebase">EXPLORE THE KNOWLEDGE BASE</a>
+                    <a class="btn btn-primary" href="#slide-2" data-track="explore">EXPLORE THE EAS PROJECT</a>
+                    <a class="btn btn-secondary" href="/knowledgebase" data-track="kb">EXPLORE THE KNOWLEDGE BASE</a>
                 </div>
             </div>
 
@@ -611,16 +611,17 @@
             <img class="lockup" src="./assets/logo.svg" alt="">
             <div class="closing-actions">
                 <div class="closing-stack">
-                    <a class="btn btn-primary" href="mailto:contact@electricairshipping.com">CONTACT</a>
-                    <a class="btn btn-primary" href="#" data-nl-open>RECEIVE</a>
+                    <a class="btn btn-primary" href="mailto:contact@electricairshipping.com" data-track="contact">CONTACT</a>
+                    <a class="btn btn-primary" href="#" data-nl-open data-track="receive">RECEIVE</a>
                 </div>
-                <a class="btn btn-secondary btn-twoline" href="/knowledgebase">EXPLORE THE<br>KNOWLEDGE BASE</a>
+                <a class="btn btn-secondary btn-twoline" href="/knowledgebase" data-track="kb">EXPLORE THE<br>KNOWLEDGE BASE</a>
             </div>
         </section>
     </main>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script src="./assets/newsletter.js" defer></script>
+    <script src="./assets/analytics.js" defer></script>
     <script>
         /* Anchor buttons (EXPLORE, chevron): Chromium cancels smooth anchor
          * navigation when scroll-snap sits on the root — the snap pulls back
