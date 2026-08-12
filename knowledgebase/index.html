@@ -483,6 +483,10 @@
 
             const open = () => {
                 overlay.classList.add('open');
+                // Fresh state every open: a box ticked during an earlier
+                // visit to the modal must not silently ride along.
+                consent.checked = false;
+                pwIn.value = '';
                 setStep(1);
             };
             const close = () => {
