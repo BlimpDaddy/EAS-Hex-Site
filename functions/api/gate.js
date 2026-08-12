@@ -10,7 +10,11 @@
  * the point is the request-access funnel next to it.
  *
  * Comparison is CASE-SENSITIVE by explicit decision: the exact spelling of
- * the password is part of the game. No hints on failure.
+ * the password is part of the game. No hints on failure. One tolerance: a
+ * leading "@" is stripped from both sides before comparing — the code is a
+ * Twitter handle (the ring being kissed), and people type handles with and
+ * without the @ interchangeably. Whether displays show the @ is decided by
+ * the stored secret's own value.
  *
  * Secrets required on the website Pages project:
  *   GATE_PASSWORD — the access code
@@ -29,7 +33,8 @@ export async function onRequestPost({ request, env }) {
         return Response.json({ ok: false }, { status: 400 });
     }
 
-    if (password.length > 128 || password !== env.GATE_PASSWORD) {
+    const norm = (s) => s.trim().replace(/^@/, '');
+    if (password.length > 128 || norm(password) !== norm(env.GATE_PASSWORD)) {
         return Response.json({ ok: false }, { status: 403 });
     }
 
