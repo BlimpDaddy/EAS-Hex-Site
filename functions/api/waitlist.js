@@ -50,6 +50,7 @@ async function ensureSchema(db) {
     'confirmed_utc TEXT',
     "source TEXT DEFAULT 'newsletter'",
     'nl_consent INTEGER NOT NULL DEFAULT 1',
+    'doc_alert_utc TEXT',
   ]) {
     try { await db.exec(`ALTER TABLE newsletter ADD COLUMN ${col}`); } catch { /* exists */ }
   }
@@ -93,21 +94,38 @@ function confirmationEmail(env, email, token, source) {
 // The warmest lead the site produces, delivered instead of sitting silently
 // in D1. Fire-and-forget via waitUntil — a slow or failed alert must never
 // delay or break the visitor's own request.
+//
+// Deduped to ONE alert per address per 24h (doc_alert_utc): a prankster
+// re-requesting 400 times produces one email, not 400. The stamp is written
+// only after a successful send, so a failed alert retries on the next
+// request instead of going silent for a day.
+function shouldAlert(existing) {
+  if (!existing || !existing.doc_alert_utc) return true;
+  const last = Date.parse(existing.doc_alert_utc.replace(' ', 'T') + 'Z');
+  return !Number.isFinite(last) || Date.now() - last > 24 * 3600 * 1000;
+}
+
 function alertToby(context, env, email, nlConsent, status) {
   const detail = {
     'sent': 'New requester — confirmation email pending their click.',
     'resent': 'Repeat request from a still-unconfirmed address — confirmation re-sent.',
     'code-sent': 'Already-verified address — the access code went straight to them.',
   }[status] ?? status;
-  context.waitUntil(
-    sendEmail(env, 'contact@electricairshipping.com',
+  context.waitUntil((async () => {
+    const sent = await sendEmail(env, 'contact@electricairshipping.com',
       `Ask nicely: ${email}`,
       wrap(
         '<p>Someone asked nicely for the conceptual design.</p>' +
         `<p><b>${email}</b></p>` +
         `<p>${detail}<br>Newsletter box: ${nlConsent ? 'ticked' : 'not ticked'}.</p>`
-      )).catch(() => { /* the lead is still in D1 */ })
-  );
+      ));
+    if (sent) {
+      await env.DB
+        .prepare("UPDATE newsletter SET doc_alert_utc = datetime('now') WHERE email = ?1")
+        .bind(email)
+        .run();
+    }
+  })().catch(() => { /* the lead is still in D1 */ }));
 }
 
 function codeEmail(env, email, joinToken) {
@@ -170,7 +188,7 @@ export async function onRequestPost(context) {
   try {
     await ensureSchema(env.DB);
     const existing = await env.DB
-      .prepare('SELECT verified, nl_consent FROM newsletter WHERE email = ?1')
+      .prepare('SELECT verified, nl_consent, doc_alert_utc FROM newsletter WHERE email = ?1')
       .bind(email)
       .first();
 
@@ -199,7 +217,7 @@ export async function onRequestPost(context) {
         if (!env.GATE_PASSWORD || !(await codeEmail(env, email, joinToken))) {
           return Response.json({ ok: false, error: 'email' }, { status: 502 });
         }
-        alertToby(context, env, email, nlConsent, 'code-sent');
+        if (shouldAlert(existing)) alertToby(context, env, email, nlConsent, 'code-sent');
         return Response.json({ ok: true, status: 'code-sent' });
       }
       return Response.json({ ok: true, status: 'already' });
@@ -221,7 +239,7 @@ export async function onRequestPost(context) {
     if (!(await confirmationEmail(env, email, token, source))) {
       return Response.json({ ok: false, error: 'email' }, { status: 502 });
     }
-    if (source === 'design-doc') {
+    if (source === 'design-doc' && shouldAlert(existing)) {
       alertToby(context, env, email, nlConsent, existing ? 'resent' : 'sent');
     }
     return Response.json({ ok: true, status: existing ? 'resent' : 'sent' });
