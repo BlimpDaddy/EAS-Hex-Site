@@ -90,6 +90,26 @@ function confirmationEmail(env, email, token, source) {
         wrap('<p>Hi there legend — you (or someone using this address) asked to receive the EAS newsletter.</p>' + button));
 }
 
+// The warmest lead the site produces, delivered instead of sitting silently
+// in D1. Fire-and-forget via waitUntil — a slow or failed alert must never
+// delay or break the visitor's own request.
+function alertToby(context, env, email, nlConsent, status) {
+  const detail = {
+    'sent': 'New requester — confirmation email pending their click.',
+    'resent': 'Repeat request from a still-unconfirmed address — confirmation re-sent.',
+    'code-sent': 'Already-verified address — the access code went straight to them.',
+  }[status] ?? status;
+  context.waitUntil(
+    sendEmail(env, 'contact@electricairshipping.com',
+      `Ask nicely: ${email}`,
+      wrap(
+        '<p>Someone asked nicely for the conceptual design.</p>' +
+        `<p><b>${email}</b></p>` +
+        `<p>${detail}<br>Newsletter box: ${nlConsent ? 'ticked' : 'not ticked'}.</p>`
+      )).catch(() => { /* the lead is still in D1 */ })
+  );
+}
+
 function codeEmail(env, email, joinToken) {
   // No "again" — this path serves anyone already verified, including
   // newsletter subscribers asking for the document the FIRST time.
@@ -109,7 +129,8 @@ function codeEmail(env, email, joinToken) {
     ));
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
+  const { request, env } = context;   // full context kept for waitUntil
   let email, tsToken, source, nlConsent;
   try {
     const body = await request.json();
@@ -178,6 +199,7 @@ export async function onRequestPost({ request, env }) {
         if (!env.GATE_PASSWORD || !(await codeEmail(env, email, joinToken))) {
           return Response.json({ ok: false, error: 'email' }, { status: 502 });
         }
+        alertToby(context, env, email, nlConsent, 'code-sent');
         return Response.json({ ok: true, status: 'code-sent' });
       }
       return Response.json({ ok: true, status: 'already' });
@@ -198,6 +220,9 @@ export async function onRequestPost({ request, env }) {
 
     if (!(await confirmationEmail(env, email, token, source))) {
       return Response.json({ ok: false, error: 'email' }, { status: 502 });
+    }
+    if (source === 'design-doc') {
+      alertToby(context, env, email, nlConsent, existing ? 'resent' : 'sent');
     }
     return Response.json({ ok: true, status: existing ? 'resent' : 'sent' });
   } catch {
