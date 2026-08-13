@@ -1,0 +1,94 @@
+# Electric Air Shipping
+
+> Electric Air Shipping (EAS) is an Australian venture building the Sunship —
+> a volumetric-thermal cargo airship lifted by electrically superheated air.
+> No helium, no hydrogen lifting gas, zero emissions in flight. The
+> sustainable middle option for global freight: materially faster than ships,
+> far cheaper than air freight.
+
+## About
+
+Over-ocean freight is trapped between two options: ocean shipping emits about
+one gigatonne of CO2 annually (roughly 3% of the global total), while
+international air freight produces roughly fifty times the CO2 per
+tonne-kilometre of ocean shipping at many times the cost. The industry has
+wanted a middle option for fifty years: air-freight speed at near
+ocean-freight cost, without the emissions.
+
+EAS's diagnosis is that airships failed historically for reasons that no
+longer bind: helium (scarce and expensive), hydrogen (uncertifiable as a
+lifting gas), and constant buoyancy (which makes landing and cargo exchange
+genuinely hard) — and, more fundamentally, that most large airships ever
+built were the wrong shape. An airship is a machine for enclosing volume, and
+the conventional cigar is one of the worst shapes for the job.
+
+The company's published Shape-Volume Scalar (VS) framework quantifies this:
+a conventional cigar airship has VS around 16–36 and encloses only about
+1.5–5% of its bounding sphere's volume, while the Sunship's gömböc-like form
+reaches VS about 1.5–1.7 with 53–68% volume efficiency — near-spherical
+volume with the directionality a sphere lacks. At equal 400 m maximum
+dimension, derived from the same framework, volumetric-thermal lift yields a
+theoretical maximum payload around 12,300 tonnes against roughly 660 tonnes
+for a conventional helium airship: about a 19x payload advantage.
+
+The lift principle is deliberately simple physics: the ideal gas law and
+Archimedes' principle. The "lifting gas" is a giant, optimally shaped bubble
+of electrically heated hot air (design point around 500 °C), giving true
+variable buoyancy — heat to lift, vent to descend — which makes VTOL,
+infinite hover and standardised cargo exchange tractable. Design-scale
+figures (a ~300 m "Standard" Sunship): several thousand tonnes of payload
+per flight, cruise around 120 km/h, trans-oceanic range, roughly 85 cycles a
+year — on the order of 4 billion tonne-kilometres of work per ship annually.
+A fleet of under a hundred could in principle perform the equivalent total
+work of every cargo aircraft on Earth combined. These are design estimates
+from the published mathematics, not measured flight data — EAS labels its
+numbers by provenance (calculated, engineering input, or working assumption).
+
+Supporting systems use existing technology: aerogel (Pyrogel-class) thermal
+insulation, grid-charged thermal batteries for heating, a rigid-geodesic
+structure in densified wood and composite, hydrogen fuel cell propulsion, and
+boundary-layer ingestion with an adaptive rear mast for drag reduction.
+
+The business model is the freight layer, not aircraft sales: customers book
+capacity the way they buy ocean or air freight today, operations plug into
+existing ports and land logistics, over-ocean legs earn carbon credits, and
+the cost target is on the order of 10 cents per tonne-kilometre — ship-like
+cost at a fraction of the time with none of the emissions. New cargo
+categories become viable at Sunship volume: atmospheric water collection,
+bulk hydrogen distribution, and dynamic spot markets such as disaster relief.
+
+Validation and status: core aerodynamic assumptions wind-tunnel tested and
+independently assessed at TRL 3; the mathematics published with a front-cover
+feature in Airship, the journal of the Airship Association; patent pending
+(Australian application AU 2026902104) with registered designs filed and an
+international PCT filing underway; accepted into the Stone & Chalk innovation
+hub, with academic advisor Dr Iran Sanadzadeh (University of Adelaide).
+Founded by Toby Brandenburg (R&D lead, designer of the VS/VE framework and
+the Sunship) and Brian Brandenburg (director, economist).
+
+## Site
+
+- [Homepage](https://electricairshipping.com/): the pitch — an 11-slide
+  overview presented as a scrolling deck; every slide's full text is present
+  in the page as accessible HTML
+- [Knowledge Base](https://electricairshipping.com/knowledgebase/): the
+  six-point hub linking every public document
+- [Fleet Calculator](https://calc.electricairshipping.com/): interactive
+  calculator — compare hull shapes by volume efficiency (the VS/VE
+  framework), size a Sunship, model fleet-scale work and emissions
+
+## Documents
+
+- [Pitch Deck (PDF)](https://drive.google.com/file/d/1j3zN5wPRL4vD6RBr7XTnyx6hq1u_tfNi/view):
+  the investor and partner deck
+- [Vision Whitepaper (PDF)](https://drive.google.com/file/d/1ARGSUN5e6wHadcO3wT6FCcmrhRsPxvbI/view):
+  the 11-page narrative
+- [The Shape-Volume Scalar (PDF)](https://drive.google.com/file/d/1_xdBSdVZ-B19MCYf1XynxpSxqAu0TEsW/view):
+  the mathematics of the VS/VE shape framework
+- The full 60-page Sunship Conceptual Design is free via the access gate at
+  knowledge base point 6 — ask nicely.
+
+## Contact
+
+- [Email](mailto:contact@electricairshipping.com): contact@electricairshipping.com
+- Newsletter: the RECEIVE link on any page (double opt-in)
