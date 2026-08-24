@@ -16,7 +16,7 @@
     /* Deployed berry. The brand's canonical value is #c428a3; reconciling the
        two is a deliberate separate pass across all repos, so this stays as-is
        and the repaint becomes a one-line change here. */
-    --berry: #c628a5;
+    --berry: #c428a3;
     --orange: #ff9900;
 
     /* Shared by the bar's own height AND the homepage's scroll-padding-top.

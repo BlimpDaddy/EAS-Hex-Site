@@ -16,7 +16,7 @@ const page = (title, body) =>
     `<title>${title} — Electric Air Shipping</title></head>` +
     '<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#111;font-family:Arial,sans-serif">' +
     '<div style="text-align:center;padding:2rem;border:0.25rem solid #222;border-radius:0.25rem;max-width:26rem">' +
-    `<h1 style="color:#c628a5;font-weight:normal">${title}</h1>` +
+    `<h1 style="color:#c428a3;font-weight:normal">${title}</h1>` +
     `${body}` +
     '<p><a href="https://electricairshipping.com" style="color:#ff9900">electricairshipping.com</a></p>' +
     '</div></body></html>',
@@ -43,7 +43,7 @@ export async function onRequestGet({ request, env }) {
 
     if (row.source === 'design-doc') {
       const code = env.GATE_PASSWORD
-        ? `<p style="color:#eaeaea">Your access code:</p><p style="color:#c628a5;font-size:1.6em"><b>${env.GATE_PASSWORD}</b></p>`
+        ? `<p style="color:#eaeaea">Your access code:</p><p style="color:#c428a3;font-size:1.6em"><b>${env.GATE_PASSWORD}</b></p>`
         : p('Your access code is on its way by email.');
       return page('You asked nicely ✓',
         code +
