@@ -58,7 +58,7 @@ async function ensureSchema(db) {
 
 const wrap = (inner) =>
   '<div style="font-family:Arial,sans-serif;max-width:34em;margin:0 auto;color:#222">' +
-  '<h2 style="color:#c628a5">Electric Air Shipping</h2>' + inner + '</div>';
+  '<h2 style="color:#c428a3">Electric Air Shipping</h2>' + inner + '</div>';
 
 async function sendEmail(env, to, subject, html) {
   const res = await fetch('https://api.resend.com/emails', {
@@ -81,7 +81,7 @@ async function sendEmail(env, to, subject, html) {
 function confirmationEmail(env, email, token, source) {
   const link = `https://electricairshipping.com/api/confirm?t=${token}`;
   const button =
-    `<p><a href="${link}" style="display:inline-block;background:#c628a5;color:#fff;padding:0.6em 1.2em;border-radius:4px;text-decoration:none">Confirm</a></p>` +
+    `<p><a href="${link}" style="display:inline-block;background:#c428a3;color:#fff;padding:0.6em 1.2em;border-radius:4px;text-decoration:none">Confirm</a></p>` +
     `<p style="font-size:0.85em;color:#666">Or paste this link into your browser:<br>${link}</p>` +
     '<p style="font-size:0.85em;color:#666">If this wasn\'t you, simply ignore this email — the address will never be mailed again.</p>';
   return source === 'design-doc'
