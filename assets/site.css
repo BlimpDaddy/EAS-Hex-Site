@@ -127,6 +127,85 @@
     outline-offset: 3px;
 }
 
+/* ------------------------------------------------- sections menu (bars) */
+/* Markup is injected by assets/menu.js so it exists in exactly one place;
+   only these styles are shared. The bar holds CONTACT and RECEIVE as words
+   and everything else behind this button, so the bar's width stays fixed
+   however many sections there are. */
+
+.menu-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.28rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.menu-btn span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--berry);
+    transition: background 0.15s;
+}
+
+.menu-btn:hover span,
+.menu-btn:focus-visible span,
+.menu-wrap.open .menu-btn span {
+    background: var(--orange);
+}
+
+.menu-btn:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 3px;
+}
+
+.menu-panel {
+    position: absolute;
+    top: calc(100% + 0.55rem);
+    right: 0;
+    min-width: 10rem;
+    display: flex;
+    flex-direction: column;
+    background: rgba(17, 17, 17, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #2a2a2a;
+    padding: 0.35rem 0;
+}
+
+.menu-panel[hidden] {
+    display: none;
+}
+
+.menu-panel a {
+    padding: 0.5rem 1.1rem;
+    color: var(--berry);
+    text-decoration: none;
+    white-space: nowrap;
+    /* Items align to the panel's right edge, which sits on the page's right
+       margin — so every entry lines up under the button however long it is,
+       and a longer future entry grows leftwards instead of shifting the set. */
+    text-align: right;
+}
+
+.menu-panel a:hover,
+.menu-panel a:focus-visible {
+    color: var(--orange);
+    background: rgba(255, 255, 255, 0.04);
+}
+
 /* --------------------------------------------- newsletter modal (RECEIVE) */
 /* Markup is injected by assets/newsletter.js so it exists in exactly one
    place; only these styles are shared. */

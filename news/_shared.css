@@ -1,0 +1,34 @@
+/* Jellyfish archive — page layout only. Chrome and tokens come from
+   assets/site.css, which this must never fight. */
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--fg);
+  font-family:Geist, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+a{ color:var(--berry); }
+a:hover,a:focus-visible{ color:var(--orange); }
+.wrap{ max-width:64rem; margin:0 auto; padding:calc(var(--bar-h) + 3.5rem) clamp(1rem,4vw,2rem) 5rem; }
+.kicker{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+  letter-spacing:.18em; font-size:1.15rem; color:var(--berry); margin:0 0 .5rem; }
+h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
+  letter-spacing:-.03em; margin:0 0 1rem; }
+.standfirst{ font-size:clamp(1rem,2.2vw,1.2rem); line-height:1.6; color:#cfcfcf;
+  max-width:38em; margin:0 0 2.5rem; }
+.rule{ border:0; border-top:1px solid #2a2a2a; margin:3rem 0; }
+.issue{ display:grid; grid-template-columns:minmax(0,15rem) 1fr; gap:clamp(1.5rem,4vw,3rem);
+  align-items:start; }
+@media (max-width:44rem){ .issue{ grid-template-columns:1fr; } }
+.issue img{ width:100%; height:auto; display:block; border:1px solid #2a2a2a; }
+.issue h2{ font-weight:500; font-size:1.8rem; letter-spacing:-.02em; margin:0 0 .35rem; }
+.issue .date{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+  letter-spacing:.16em; font-size:1rem; color:var(--muted); margin-bottom:1rem; }
+.issue p{ line-height:1.6; color:#cfcfcf; max-width:40em; }
+.btn{ display:inline-block; font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+  letter-spacing:.12em; font-size:1.1rem; text-decoration:none; color:var(--berry);
+  border:1px solid var(--berry); padding:.55rem 1.1rem; margin:1.25rem .6rem 0 0; }
+.btn:hover,.btn:focus-visible{ color:var(--bg); background:var(--orange); border-color:var(--orange); }
+.contents{ list-style:none; padding:0; margin:2rem 0 0; display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:1.25rem 2rem; }
+.contents li{ border-top:1px solid #2a2a2a; padding-top:.7rem; line-height:1.45; color:#cfcfcf; }
+.contents .n{ font-family:Genos, system-ui, sans-serif; letter-spacing:.16em;
+  color:var(--orange); display:block; font-size:.95rem; margin-bottom:.3rem; }
+.embed{ width:100%; aspect-ratio:1/1.414; border:1px solid #2a2a2a; margin-top:2rem; background:#1a1a1a; }
+.foot{ font-size:.9rem; color:var(--muted); line-height:1.6; margin-top:3rem; }
