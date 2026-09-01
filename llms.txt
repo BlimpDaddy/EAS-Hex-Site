@@ -2,9 +2,8 @@
 
 > Electric Air Shipping (EAS) is an Australian venture building the Sunship —
 > a volumetric-thermal cargo airship lifted by electrically heated air. No
-> helium, no hydrogen lifting gas, zero emissions in flight. The sustainable
-> middle option for global freight: materially faster than ships, far cheaper
-> than air freight.
+> helium, no hydrogen lifting gas, zero emissions in flight.
+> Faster, cheaper, more adaptable international freight.
 
 **This file is a map, not the material.** Everything EAS has published lives in
 one plain-text file: https://www.electricairshipping.com/llms-full.txt — the
