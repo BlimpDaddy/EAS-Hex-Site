@@ -2,4 +2,12 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
+# AI crawlers and training are welcome here - this is a public research project
+# and we would rather be read than guessed at.
+#
+# Everything EAS has published, in one plain-text file:
+#   https://electricairshipping.com/llms-full.txt
+# Short map of the site, for orientation first:
+#   https://electricairshipping.com/llms.txt
+
 Sitemap: https://electricairshipping.com/sitemap.xml
