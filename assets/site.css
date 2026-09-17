@@ -133,8 +133,10 @@
    and everything else behind this button, so the bar's width stays fixed
    however many sections there are. */
 
+/* Deliberately NOT position:relative — the panel below anchors to the BAR,
+   not to this button, and leaving no positioning context here is what lets
+   it do that. */
 .menu-wrap {
-    position: relative;
     display: flex;
     align-items: center;
 }
@@ -171,9 +173,13 @@
     outline-offset: 3px;
 }
 
+/* Anchored to .topbar. With .menu-wrap unpositioned these offsets resolve
+   against the bar's padding box, so top:100% is the bar's full height and
+   right:0 its outer edge: the panel hangs flush off the bar rather than
+   floating inset from it and overlapping its lower few pixels. */
 .menu-panel {
     position: absolute;
-    top: calc(100% + 0.55rem);
+    top: 100%;
     right: 0;
     min-width: 10rem;
     display: flex;
@@ -182,6 +188,8 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid #2a2a2a;
+    border-top: 0;      /* the bar itself is the panel's top edge */
+    border-right: 0;    /* would otherwise be a hairline on the screen edge */
     padding: 0.35rem 0;
 }
 
@@ -191,6 +199,10 @@
 
 .menu-panel a {
     padding: 0.5rem 1.1rem;
+    /* Matches .topbar's own inline padding EXACTLY, so every label lands on
+       the same right margin as CONTACT, RECEIVE and the button above it.
+       If the bar's padding changes, change this with it. */
+    padding-right: clamp(0.75rem, 2.5vw, 2rem);
     color: var(--berry);
     text-decoration: none;
     white-space: nowrap;
