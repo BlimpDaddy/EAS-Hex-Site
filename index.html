@@ -102,10 +102,15 @@
             animation: heroFade 30s linear infinite;
         }
 
-        .hero-layer:nth-of-type(2) { animation-delay: 4.5s; }
-        .hero-layer:nth-of-type(3) { animation-delay: 10.5s; }
-        .hero-layer:nth-of-type(4) { animation-delay: 16.5s; }
-        .hero-layer:nth-of-type(5) { animation-delay: 22.5s; }
+        /* Numbered 1-4, not 2-5: nth-of-type counts by TAG among siblings and
+           the lead is an <img>, so the four layer divs are div 1-4. Numbering
+           from 2 left layer one on a 0s delay — it covered the lead instantly,
+           and the 22.5s slot pointed at .hero-scrim, where it did nothing.
+           The 0-4.5s slot belongs to the lead render. */
+        .hero-layer:nth-of-type(1) { animation-delay: 4.5s; }
+        .hero-layer:nth-of-type(2) { animation-delay: 10.5s; }
+        .hero-layer:nth-of-type(3) { animation-delay: 16.5s; }
+        .hero-layer:nth-of-type(4) { animation-delay: 22.5s; }
 
         @keyframes heroFade {
             0% { opacity: 0; }
@@ -372,9 +377,11 @@
                 srcset="./assets/hero/over-water-1280.webp 1280w, ./assets/hero/over-water-1920.webp 1920w, ./assets/hero/over-water-2560.webp 2560w, ./assets/hero/over-water-2730.webp 2730w"
                 sizes="100vw" width="2730" height="1536" fetchpriority="high">
 
-            <!-- Attached by script after window load; decorative. -->
-            <div class="hero-layer" aria-hidden="true" data-slug="forest" data-widths="1280,1672"></div>
+            <!-- Attached by script after window load; decorative.
+                 THIS ORDER IS THE CAROUSEL ORDER — the delays above are applied
+                 by position, so moving a line moves the shot in the cycle. -->
             <div class="hero-layer" aria-hidden="true" data-slug="shallows" data-widths="1280,1920,2560,2956"></div>
+            <div class="hero-layer" aria-hidden="true" data-slug="forest" data-widths="1280,1672"></div>
             <div class="hero-layer" aria-hidden="true" data-slug="water-low" data-widths="1280,1672"></div>
             <div class="hero-layer" aria-hidden="true" data-slug="docking" data-widths="1280,1920,2432"></div>
 
