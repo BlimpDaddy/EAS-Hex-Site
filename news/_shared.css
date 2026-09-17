@@ -1,4 +1,4 @@
-/* Jellyfish archive — page layout only. Chrome and tokens come from
+/* News section — page layout only. Chrome and tokens come from
    assets/site.css, which this must never fight. */
 *{ box-sizing:border-box; }
 html,body{ margin:0; background:var(--bg); color:var(--fg);
@@ -6,21 +6,42 @@ html,body{ margin:0; background:var(--bg); color:var(--fg);
 a{ color:var(--berry); }
 a:hover,a:focus-visible{ color:var(--orange); }
 .wrap{ max-width:64rem; margin:0 auto; padding:calc(var(--bar-h) + 3.5rem) clamp(1rem,4vw,2rem) 5rem; }
+/* Also worn by <h1> and <h2> on the index, so the weight is pinned: without
+   it a heading would render at 500 and a <p> kicker at 400, for no reason a
+   reader could see. */
 .kicker{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
-  letter-spacing:.18em; font-size:1.15rem; color:var(--berry); margin:0 0 .5rem; }
+  letter-spacing:.18em; font-size:1.15rem; font-weight:400; color:var(--berry);
+  margin:0 0 .5rem; }
 h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
   letter-spacing:-.03em; margin:0 0 1rem; }
 .standfirst{ font-size:clamp(1rem,2.2vw,1.2rem); line-height:1.6; color:#cfcfcf;
   max-width:38em; margin:0 0 2.5rem; }
 .rule{ border:0; border-top:1px solid #2a2a2a; margin:3rem 0; }
-.issue{ display:grid; grid-template-columns:minmax(0,15rem) 1fr; gap:clamp(1.5rem,4vw,3rem);
+/* A strand is one list on the index: Jellyfish issues, or everything else.
+   They are deliberately identical in layout, so a third strand needs no new
+   CSS - only a <section class="strand"> in the markup. */
+.strand{ margin-top:2.5rem; }
+
+/* One card, used for BOTH a Jellyfish issue and any other article. It was
+   called .issue when Jellyfish was the only thing on the page; the name is
+   .entry now because a press announcement is not an issue of anything. */
+.entry{ display:grid; grid-template-columns:minmax(0,15rem) 1fr; gap:clamp(1.5rem,4vw,3rem);
   align-items:start; }
-@media (max-width:44rem){ .issue{ grid-template-columns:1fr; } }
-.issue img{ width:100%; height:auto; display:block; border:1px solid #2a2a2a; }
-.issue h2{ font-weight:500; font-size:1.8rem; letter-spacing:-.02em; margin:0 0 .35rem; }
-.issue .date{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+@media (max-width:44rem){ .entry{ grid-template-columns:1fr; } }
+
+/* No picture: the text takes the full width rather than leaving a 15rem hole. */
+.entry--nopic{ grid-template-columns:1fr; }
+
+/* Entries separate themselves, so adding one is a paste with no extra markup
+   between. Matches .rule, which separates a strand's heading from its first. */
+.entry + .entry{ margin-top:3rem; padding-top:3rem; border-top:1px solid #2a2a2a; }
+
+.entry img{ width:100%; height:auto; display:block; border:1px solid #2a2a2a; }
+.entry h3{ font-weight:500; font-size:1.8rem; letter-spacing:-.02em; margin:0 0 .35rem; }
+.entry h3 a{ text-decoration:none; }
+.entry .date{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
   letter-spacing:.16em; font-size:1rem; color:var(--muted); margin-bottom:1rem; }
-.issue p{ line-height:1.6; color:#cfcfcf; max-width:40em; }
+.entry p{ line-height:1.6; color:#cfcfcf; max-width:40em; }
 .btn{ display:inline-block; font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
   letter-spacing:.12em; font-size:1.1rem; text-decoration:none; color:var(--berry);
   border:1px solid var(--berry); padding:.55rem 1.1rem; margin:1.25rem .6rem 0 0; }

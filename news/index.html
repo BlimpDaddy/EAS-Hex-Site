@@ -33,27 +33,73 @@
     </header>
 
     <main class="wrap">
-        <p class="kicker">News</p>
-        <h1>What we have been doing.</h1>
-        <p class="standfirst">Announcements, press, and <strong>Jellyfish</strong> &mdash; our monthly
-            update, written by Brian and Toby Brandenburg and published on the first of the month.</p>
+        <!-- ==================================================================
+             ADDING SOMETHING TO THIS PAGE
 
-        <p class="kicker" style="margin-top:2.5rem">Jellyfish &middot; the monthly update</p>
+             Two strands, each a <section class="strand"> with its own heading:
 
-        <hr class="rule">
+               1. Jellyfish  - the monthly PDF issues.
+               2. Announcements & articles - everything that is not Jellyfish.
 
-        <article class="issue">
-            <a href="./jellyfish/001/"><img src="./jellyfish/001/cover.jpg" alt="Jellyfish No. 001 cover"></a>
-            <div>
-                <h2><a href="./jellyfish/001/" style="text-decoration:none">Jellyfish No. 001</a></h2>
-                <p class="date">August 2026</p>
-                <p>The Stone &amp; Chalk interview, Adelaide Climate Action Week, the trade mark for
-                    The Sunship, six weeks in an AI accelerator, and the first of twelve short
-                    explainers: why anything floats.</p>
-                <a class="btn" href="./jellyfish/001/">Read it</a>
-                <a class="btn" href="./jellyfish/001/jellyfish-001.pdf">Download PDF</a>
-            </div>
-        </article>
+             To add an entry, paste an <article class="entry"> at the TOP of the
+             right strand (newest first) and fill the five marked fields. No
+             separator markup needed - entries rule themselves off in CSS.
+
+             Strand 2 ships commented out because it is empty. Uncomment the
+             whole <section> when the first entry goes in, so the page never
+             shows a heading with nothing under it.
+        =================================================================== -->
+
+        <h1 class="kicker">News</h1>
+
+        <!-- ------------------------------------------- strand 1: Jellyfish -->
+        <section class="strand">
+            <h2 class="kicker">Jellyfish &middot; the monthly update</h2>
+            <hr class="rule">
+
+            <article class="entry">
+                <a href="./jellyfish/001/"><img src="./jellyfish/001/cover.jpg" alt="Jellyfish No. 001 cover"></a>
+                <div>
+                    <h3><a href="./jellyfish/001/">Jellyfish No. 001</a></h3>
+                    <p class="date">August 2026</p>
+                    <p>The Stone &amp; Chalk interview, Adelaide Climate Action Week, the trade mark for
+                        The Sunship, six weeks in an AI accelerator, and the first of twelve short
+                        explainers: why anything floats.</p>
+                    <a class="btn" href="./jellyfish/001/">Read it</a>
+                    <a class="btn" href="./jellyfish/001/jellyfish-001.pdf">Download PDF</a>
+                </div>
+            </article>
+        </section>
+
+        <!-- --------------------------- strand 2: announcements & articles --
+             EMPTY. Uncomment this whole section when the first entry is ready,
+             then copy the article inside it for each one after that.
+
+        <section class="strand">
+            <h2 class="kicker">Announcements &amp; articles</h2>
+            <hr class="rule">
+
+            <article class="entry">
+                <a href="LINK"><img src="IMAGE" alt="DESCRIBE THE IMAGE"></a>
+                <div>
+                    <h3><a href="LINK">TITLE</a></h3>
+                    <p class="date">MONTH YEAR</p>
+                    <p>SUMMARY - a couple of sentences, same voice as the Jellyfish blurb above.</p>
+                    <a class="btn" href="LINK">Read it</a>
+                </div>
+            </article>
+        </section>
+
+             The five fields are LINK, IMAGE, TITLE, the date, and the summary.
+
+             LINK is either a page in this folder (./something/, with its own
+             index.html beside jellyfish/) or a full https:// address for press
+             published elsewhere - an outside link wants "Read it" changed to
+             something honest like "Read it at the ABC".
+
+             NO PICTURE? Use <article class="entry entry--nopic"> and delete the
+             <a><img></a> line entirely. The text then runs the full width.
+        -->
 
         <aside class="signup">
             <h2>Get Jellyfish by email.</h2>
