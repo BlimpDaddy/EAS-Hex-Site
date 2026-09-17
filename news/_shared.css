@@ -54,10 +54,18 @@ h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
 .embed{ width:100%; aspect-ratio:1/1.414; border:1px solid #2a2a2a; margin-top:2rem; background:#1a1a1a; }
 .foot{ font-size:.9rem; color:var(--muted); line-height:1.6; margin-top:3rem; }
 
-/* Subscribe block. Deliberately AFTER the issue, not before it: someone who has
-   just read something is a far better ask than someone who has not. Fires the
-   same RECEIVE modal as the top bar — one signup path, one backend. */
-.signup{ border:1px solid #2a2a2a; background:#151515; padding:clamp(1.4rem,3vw,2rem);
-  margin:3.5rem 0 0; }
-.signup h2{ font-weight:500; font-size:1.5rem; letter-spacing:-.02em; margin:0 0 .6rem; }
-.signup .btn{ margin-top:1rem; }
+/* Subscribe block. Deliberately AFTER the issues, not before them: someone who
+   has just read something is a far better ask than someone who has not. Sits
+   inside the Jellyfish strand rather than at the foot of the page, because it
+   asks for Jellyfish specifically, not for the page.
+
+   The box IS the button. It used to be a heading with a button under it that
+   said the same thing twice, so the heading became the label and the <aside>
+   became the <a>. Fires the same RECEIVE modal as the top bar — one signup
+   path, one backend. */
+.signup{ display:block; text-align:center; text-decoration:none;
+  font-size:1.5rem; font-weight:500; letter-spacing:-.02em; color:var(--berry);
+  border:1px solid var(--berry); background:#151515;
+  padding:clamp(1.4rem,3vw,2rem); margin:3rem 0 0; }
+.signup:hover,.signup:focus-visible{ color:var(--bg); background:var(--orange);
+  border-color:var(--orange); }
