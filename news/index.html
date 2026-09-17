@@ -41,61 +41,86 @@
                1. Jellyfish  - the monthly PDF issues.
                2. Announcements & articles - everything that is not Jellyfish.
 
-             To add an entry, paste an <article class="entry"> at the TOP of the
-             right strand (newest first) and fill in five things: the link, the
-             image, the title, the date, the summary. No separator markup is
-             needed - entries rule themselves off in CSS.
+             Each strand is a RAIL: a row that scrolls sideways. A hundred
+             issues therefore cost the same page height as one.
 
-             Pictures live in ./images/ at 840px wide. The column is 240px, so
-             840 stays sharp on a 2x screen without shipping a huge file.
+             ORDER IS NEWEST FIRST, LEFT TO RIGHT. The newest issue is the
+             FIRST <li> in the markup and the oldest is the last, so a rail
+             holding six issues reads 006, 005, 004, 003, 002, 001 as you
+             swipe right. Nothing sorts this for you - it is markup order.
 
-             An entry pointing OUTSIDE the site wants its button named honestly
-             - "Read it at Stone & Chalk", not a bare "Read it".
+             So to add an entry, paste its <li> at the TOP of the right rail
+             and fill in five things: the link, the image, the title, the date,
+             the summary. Nothing else to update - the arrows appear by
+             themselves once a rail holds more than fits on screen.
 
-             No picture? Use class="entry entry--nopic" and delete the
-             <a><img></a> line. The text then runs the full width.
+             Pictures live in ./images/ at 840px wide, except Jellyfish covers,
+             which stay in their own issue folder. Cards crop them square; if a
+             crop cuts something important, add style="object-position:top"
+             (or left / right / a percentage) to that one <img>.
+
+             An entry pointing OUTSIDE the site needs no button - the title is
+             the link, and the summary should name where it goes.
+
+             No picture? Just leave the <a><img></a> out; the card starts at
+             the title.
         =================================================================== -->
 
         <h1 class="kicker">News</h1>
 
         <!-- ------------------------------------------- strand 1: Jellyfish -->
         <section class="strand">
-            <h2 class="kicker">Jellyfish &middot; the monthly update</h2>
+            <div class="strand-head">
+                <h2 class="kicker">Jellyfish &middot; the monthly update</h2>
+            </div>
             <hr class="rule">
 
-            <article class="entry">
-                <a href="./jellyfish/001/"><img src="./jellyfish/001/cover.jpg" alt="Jellyfish No. 001 cover"></a>
-                <div>
-                    <h3><a href="./jellyfish/001/">Jellyfish No. 001</a></h3>
-                    <p class="date">August 2026</p>
-                    <p>The Stone &amp; Chalk interview, Adelaide Climate Action Week, the trade mark for
-                        The Sunship, six weeks in an AI accelerator, and the first of twelve short
-                        explainers: why anything floats.</p>
-                    <a class="btn" href="./jellyfish/001/">Read it</a>
-                    <a class="btn" href="./jellyfish/001/jellyfish-001.pdf">Download PDF</a>
-                </div>
-            </article>
+            <ul class="rail" tabindex="0" aria-label="Jellyfish issues, newest first">
+                <li>
+                    <article class="entry">
+                        <a href="./jellyfish/001/"><img src="./jellyfish/001/cover.jpg"
+                                alt="Jellyfish No. 001 cover"></a>
+                        <h3><a href="./jellyfish/001/">Jellyfish No. 001</a></h3>
+                        <p class="date">August 2026</p>
+                        <p>The Stone &amp; Chalk interview, Adelaide Climate Action Week, the trade
+                            mark for The Sunship, six weeks in an AI accelerator, and the first of
+                            twelve short explainers: why anything floats.</p>
+                        <a class="btn" href="./jellyfish/001/">Read it</a>
+                        <a class="btn" href="./jellyfish/001/jellyfish-001.pdf">Download PDF</a>
+                    </article>
+                </li>
+            </ul>
+
+            <!-- Outside the rail on purpose: it must not slide away with the
+                 cards. It asks for Jellyfish, so it lives in this strand. -->
             <a class="signup" href="#" data-nl-open data-track="receive-news">Get Jellyfish by email.</a>
         </section>
 
         <!-- ----------------------- strand 2: announcements & articles -->
         <section class="strand">
-            <h2 class="kicker">Announcements &amp; articles</h2>
+            <div class="strand-head">
+                <h2 class="kicker">Announcements &amp; articles</h2>
+            </div>
             <hr class="rule">
 
-            <article class="entry">
-                <a href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky"><img src="./images/stone-and-chalk-2026-08.jpg"
-                        alt="Brian and Toby Brandenburg standing together, Toby holding a strut model of the Sunship's frame"></a>
-                <div>
-                    <h3><a href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky">The father&ndash;son battle to build a ship in the sky</a></h3>
-                    <p class="date">August 2026</p>
-                    <p>An article by Stone &amp; Chalk about our founders, Brian and Toby Brandenburg,
-                        and how a long-running family argument became Electric Air Shipping.</p>
-                </div>
-            </article>
+            <ul class="rail" tabindex="0" aria-label="Announcements and articles, newest first">
+                <li>
+                    <article class="entry">
+                        <a href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky"><img src="./images/stone-and-chalk-2026-08.jpg"
+                                alt="Brian and Toby Brandenburg standing together, Toby holding a strut model of the Sunship's frame"></a>
+                        <h3><a href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky">The father&ndash;son battle to build a ship in the sky</a></h3>
+                        <p class="date">August 2026</p>
+                        <p>An article by Stone &amp; Chalk about our founders, Brian and Toby
+                            Brandenburg, and how a long-running family argument became Electric
+                            Air Shipping.</p>
+                    </article>
+                </li>
+            </ul>
         </section>
+
     </main>
 
+    <script src="./rail.js" defer></script>
     <script src="../assets/newsletter.js" defer></script>
     <script src="../assets/menu.js" defer></script>
 </body>
