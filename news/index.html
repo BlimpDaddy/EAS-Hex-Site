@@ -42,12 +42,18 @@
                2. Announcements & articles - everything that is not Jellyfish.
 
              To add an entry, paste an <article class="entry"> at the TOP of the
-             right strand (newest first) and fill the five marked fields. No
-             separator markup needed - entries rule themselves off in CSS.
+             right strand (newest first) and fill in five things: the link, the
+             image, the title, the date, the summary. No separator markup is
+             needed - entries rule themselves off in CSS.
 
-             Strand 2 ships commented out because it is empty. Uncomment the
-             whole <section> when the first entry goes in, so the page never
-             shows a heading with nothing under it.
+             Pictures live in ./images/ at 840px wide. The column is 240px, so
+             840 stays sharp on a 2x screen without shipping a huge file.
+
+             An entry pointing OUTSIDE the site wants its button named honestly
+             - "Read it at Stone & Chalk", not a bare "Read it".
+
+             No picture? Use class="entry entry--nopic" and delete the
+             <a><img></a> line. The text then runs the full width.
         =================================================================== -->
 
         <h1 class="kicker">News</h1>
@@ -71,35 +77,23 @@
             </article>
         </section>
 
-        <!-- --------------------------- strand 2: announcements & articles --
-             EMPTY. Uncomment this whole section when the first entry is ready,
-             then copy the article inside it for each one after that.
-
+        <!-- ----------------------- strand 2: announcements & articles -->
         <section class="strand">
             <h2 class="kicker">Announcements &amp; articles</h2>
             <hr class="rule">
 
             <article class="entry">
-                <a href="LINK"><img src="IMAGE" alt="DESCRIBE THE IMAGE"></a>
+                <a href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky"><img src="./images/stone-and-chalk-2026-08.jpg"
+                        alt="Brian and Toby Brandenburg standing together, Toby holding a strut model of the Sunship's frame"></a>
                 <div>
-                    <h3><a href="LINK">TITLE</a></h3>
-                    <p class="date">MONTH YEAR</p>
-                    <p>SUMMARY - a couple of sentences, same voice as the Jellyfish blurb above.</p>
-                    <a class="btn" href="LINK">Read it</a>
+                    <h3><a href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky">The father&ndash;son battle to build a ship in the sky</a></h3>
+                    <p class="date">August 2026</p>
+                    <p>An article by Stone &amp; Chalk about our founders, Brian and Toby Brandenburg,
+                        and how a long-running family argument became Electric Air Shipping.</p>
+                    <a class="btn" href="https://www.stoneandchalk.com.au/articles/the-father-son-battle-to-build-a-ship-in-the-sky">Read it at Stone &amp; Chalk</a>
                 </div>
             </article>
         </section>
-
-             The five fields are LINK, IMAGE, TITLE, the date, and the summary.
-
-             LINK is either a page in this folder (./something/, with its own
-             index.html beside jellyfish/) or a full https:// address for press
-             published elsewhere - an outside link wants "Read it" changed to
-             something honest like "Read it at the ABC".
-
-             NO PICTURE? Use <article class="entry entry--nopic"> and delete the
-             <a><img></a> line entirely. The text then runs the full width.
-        -->
 
         <aside class="signup">
             <h2>Get Jellyfish by email.</h2>
