@@ -325,6 +325,158 @@
             }
         }
 
+        /* ------------------------------------------------------------ news */
+        /* The news page's rails, merged into one and shown here as image,
+           title and date. Styles are copied from news/_shared.css and scoped,
+           because that file's global .btn would fight this page's. */
+
+        .news {
+            max-width: 78rem;
+            margin: 0 auto;
+            padding: clamp(2.5rem, 7vh, 4.5rem) clamp(1.25rem, 6vw, 5rem) clamp(3rem, 8vh, 5rem);
+        }
+
+        .news .strand-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .news .kicker {
+            font-family: Genos, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--berry);
+        }
+
+        .news-tools {
+            display: flex;
+            align-items: center;
+            gap: 1.1rem;
+        }
+
+        .news-all {
+            font-family: Genos, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.95rem;
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .news-all:hover,
+        .news-all:focus-visible {
+            color: var(--orange);
+        }
+
+        /* rail.js puts its arrows in .strand-head; keep them left of "All news". */
+        .news .strand-head > .rail-nav {
+            order: 1;
+        }
+
+        .news .strand-head > .news-all {
+            order: 2;
+        }
+
+        .news .rail {
+            list-style: none;
+            margin: 0;
+            padding: 0 0 1rem;
+            display: flex;
+            gap: clamp(1rem, 3vw, 1.75rem);
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: #3a3a3a transparent;
+        }
+
+        .news .rail > li {
+            flex: 0 0 clamp(13rem, 62vw, 17rem);
+            scroll-snap-align: start;
+        }
+
+        .news .rail:focus-visible {
+            outline: 2px solid var(--orange);
+            outline-offset: 4px;
+        }
+
+        .news .entry img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            border: 1px solid #2a2a2a;
+        }
+
+        .news .entry h3 {
+            font-weight: 500;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+            margin: 0.9rem 0 0.3rem;
+            line-height: 1.25;
+        }
+
+        .news .entry h3 a {
+            color: var(--fg);
+            text-decoration: none;
+        }
+
+        .news .entry h3 a:hover,
+        .news .entry h3 a:focus-visible {
+            color: var(--orange);
+        }
+
+        .news .entry .date {
+            font-family: Genos, system-ui, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .rail-nav {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .rail-nav[hidden] {
+            display: none;
+        }
+
+        .rail-arrow {
+            width: 2rem;
+            height: 2rem;
+            display: grid;
+            place-items: center;
+            background: none;
+            color: var(--berry);
+            border: 1px solid var(--berry);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .rail-arrow:hover:not(:disabled),
+        .rail-arrow:focus-visible {
+            color: var(--bg);
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        .rail-arrow:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .rail-arrow svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
         /* Phones get decisive snapping (kept from the deck section). */
         @media (pointer: coarse) {
             html {
@@ -455,6 +607,19 @@
             </div>
         </section>
 
+
+        <!-- ============================================================ news
+             No content of its own: the cards are read from /news at load
+             time, both rails merged newest first, so adding an entry to the
+             news page is the only update this ever needs. Without script (or
+             if the fetch fails) it is just the heading and the All news link. -->
+        <section class="news strand snap" id="news" aria-label="News">
+            <div class="strand-head">
+                <h2 class="kicker">News</h2>
+                <a class="news-all" href="/news" data-track="news">All news &rarr;</a>
+            </div>
+            <ul class="rail" tabindex="0" aria-label="News, newest first" hidden></ul>
+        </section>
     </main>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -486,6 +651,48 @@
                 target.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth' });
             });
         });
+
+        /* News rail: borrow the cards from /news (see the comment on the
+         * section). Each card keeps its picture, title and date; summaries
+         * and buttons stay on the news page. Relative links are rewritten
+         * against /news/ so they still resolve from here. */
+        (async () => {
+            const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july',
+                'august', 'september', 'october', 'november', 'december'];
+            const when = (li) => {
+                const [m, y] = (li.querySelector('.date')?.textContent ?? '').trim().toLowerCase().split(/\s+/);
+                return (Number(y) || 0) * 12 + Math.max(MONTHS.indexOf(m), 0);
+            };
+            try {
+                const res = await fetch('/news/');
+                if (!res.ok) return;
+                const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+                const base = new URL('/news/', location.href);
+                const items = [...doc.querySelectorAll('.rail > li')];
+                if (!items.length) return;
+                /* Stable sort: within a month, Jellyfish (the first rail) leads. */
+                items.sort((a, b) => when(b) - when(a));
+                const rail = document.querySelector('.news .rail');
+                for (const li of items) {
+                    li.querySelectorAll('.entry > p:not(.date), .entry > .btn').forEach((n) => n.remove());
+                    li.querySelectorAll('[href]').forEach((n) => {
+                        const u = new URL(n.getAttribute('href'), base);
+                        n.setAttribute('href', u.origin === location.origin ? u.pathname + u.hash : u.href);
+                    });
+                    li.querySelectorAll('img[src]').forEach((n) => {
+                        n.src = new URL(n.getAttribute('src'), base).pathname;
+                        n.loading = 'lazy';
+                    });
+                    rail.appendChild(document.importNode(li, true));
+                }
+                rail.hidden = false;
+                /* The news page's own arrows script, loaded only once there
+                 * is a rail for it to find. */
+                const s = document.createElement('script');
+                s.src = '/news/rail.js';
+                document.body.appendChild(s);
+            } catch { /* heading + All news link remain */ }
+        })();
 
         /* Attach the four rotating hero layers AFTER window load, staggered,
          * so they can never compete with the lead image for first-paint
