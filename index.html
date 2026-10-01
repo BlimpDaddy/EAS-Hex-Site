@@ -330,10 +330,64 @@
            title and date. Styles are copied from news/_shared.css and scoped,
            because that file's global .btn would fight this page's. */
 
+        .end {
+            min-height: calc(100vh - var(--bar-h));
+            min-height: calc(100svh - var(--bar-h));
+            display: flex;
+            flex-direction: column;
+        }
+
         .news {
+            width: 100%;
             max-width: 78rem;
             margin: 0 auto;
-            padding: clamp(2.5rem, 7vh, 4.5rem) clamp(1.25rem, 6vw, 5rem) clamp(3rem, 8vh, 5rem);
+            padding: clamp(2rem, 6vh, 4rem) clamp(1.25rem, 6vw, 5rem) clamp(1.5rem, 4vh, 2.5rem);
+        }
+
+        /* The box IS the button, as on the news page. */
+        .signup {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: var(--berry);
+            border: 1px solid var(--berry);
+            background: #151515;
+            padding: clamp(1.1rem, 2.5vw, 1.6rem);
+            margin-top: clamp(1.5rem, 4vh, 2.5rem);
+        }
+
+        .signup:hover,
+        .signup:focus-visible {
+            color: var(--bg);
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        /* Pushed to the bottom of the last screen. */
+        .foot {
+            margin-top: auto;
+            border-top: 1px solid #2a2a2a;
+            padding: 1.4rem clamp(1.25rem, 6vw, 5rem);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem 1.4rem;
+            text-align: center;
+        }
+
+        .foot img {
+            height: 1.6rem;
+            width: auto;
+            display: block;
+        }
+
+        .foot p {
+            font-size: 0.9rem;
+            color: var(--muted);
         }
 
         .news .strand-head {
@@ -613,13 +667,26 @@
              time, both rails merged newest first, so adding an entry to the
              news page is the only update this ever needs. Without script (or
              if the fetch fails) it is just the heading and the All news link. -->
-        <section class="news strand snap" id="news" aria-label="News">
+        <!-- News, signup and footer together fill exactly one screen below
+             the bar, so the page ends on a clean snap with nothing of the
+             screen above showing. -->
+        <div class="end snap">
+        <section class="news strand" id="news" aria-label="News">
             <div class="strand-head">
                 <h2 class="kicker">News</h2>
                 <a class="news-all" href="/news" data-track="news">All news &rarr;</a>
             </div>
             <ul class="rail" tabindex="0" aria-label="News, newest first" hidden></ul>
+
+            <!-- Same RECEIVE modal as the top bar: one signup path. -->
+            <a class="signup" href="#" data-nl-open data-track="receive-home">Get Jellyfish by email.</a>
         </section>
+
+        <footer class="foot">
+            <img src="./assets/logo.svg" alt="Electric Air Shipping">
+            <p>Electric Air Shipping is decarbonising global freight with ultra-heavy-lift cargo airships.</p>
+        </footer>
+        </div>
     </main>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
