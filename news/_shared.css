@@ -22,8 +22,6 @@ a:hover,a:focus-visible{ color:var(--orange); }
 .back:hover,.back:focus-visible{ color:var(--orange); }
 h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
   letter-spacing:-.03em; margin:0 0 1rem; }
-.standfirst{ font-size:clamp(1rem,2.2vw,1.2rem); line-height:1.6; color:#cfcfcf;
-  max-width:38em; margin:0 0 2.5rem; }
 .rule{ border:0; border-top:1px solid #2a2a2a; margin:3rem 0; }
 /* A strand is one list on the index: Jellyfish issues, or everything else.
    They are deliberately identical, so a third strand needs markup only. */
@@ -91,11 +89,6 @@ h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
   letter-spacing:.12em; font-size:1.1rem; text-decoration:none; color:var(--berry);
   border:1px solid var(--berry); padding:.55rem 1.1rem; margin:1.25rem .6rem 0 0; }
 .btn:hover,.btn:focus-visible{ color:var(--bg); background:var(--orange); border-color:var(--orange); }
-.contents{ list-style:none; padding:0; margin:2rem 0 0; display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:1.25rem 2rem; }
-.contents li{ border-top:1px solid #2a2a2a; padding-top:.7rem; line-height:1.45; color:#cfcfcf; }
-.contents .n{ font-family:Genos, system-ui, sans-serif; letter-spacing:.16em;
-  color:var(--orange); display:block; font-size:.95rem; margin-bottom:.3rem; }
 .embed{ width:100%; aspect-ratio:1/1.414; border:1px solid #2a2a2a; margin-top:2rem; background:#1a1a1a; }
 .foot{ font-size:.9rem; color:var(--muted); line-height:1.6; margin-top:3rem; }
 
