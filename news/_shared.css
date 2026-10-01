@@ -89,7 +89,12 @@ h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
   letter-spacing:.12em; font-size:1.1rem; text-decoration:none; color:var(--berry);
   border:1px solid var(--berry); padding:.55rem 1.1rem; margin:1.25rem .6rem 0 0; }
 .btn:hover,.btn:focus-visible{ color:var(--bg); background:var(--orange); border-color:var(--orange); }
-.embed{ width:100%; aspect-ratio:1/1.414; border:1px solid #2a2a2a; margin-top:2rem; background:#1a1a1a; }
+/* An issue is its PDF's pages as images, stacked: every phone and browser
+   shows a picture, where an embedded PDF viewer fails outright on Android.
+   Made by Newsletter/issue-pages.py. The PDF itself is the button above. */
+.pages{ margin-top:2rem; display:grid; gap:1.25rem; }
+.pages img{ display:block; width:100%; height:auto; border:1px solid #2a2a2a;
+  background:#1a1a1a; }
 .foot{ font-size:.9rem; color:var(--muted); line-height:1.6; margin-top:3rem; }
 
 /* Subscribe block. Deliberately AFTER the issues, not before them: someone who
