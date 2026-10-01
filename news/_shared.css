@@ -12,6 +12,14 @@ a:hover,a:focus-visible{ color:var(--orange); }
 .kicker{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
   letter-spacing:.18em; font-size:1.15rem; font-weight:400; color:var(--berry);
   margin:0 0 .5rem; }
+/* Every issue page opens with this, above its kicker. Issue pages are mostly
+   reached from shared links and search, where the browser's back button does
+   not lead to /news - so the way back has to be on the page, at the top, not
+   only in the footer under a very tall PDF. */
+.back{ display:inline-block; font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+  letter-spacing:.16em; font-size:.95rem; color:var(--muted); text-decoration:none;
+  margin:0 0 1.25rem; }
+.back:hover,.back:focus-visible{ color:var(--orange); }
 h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
   letter-spacing:-.03em; margin:0 0 1rem; }
 .standfirst{ font-size:clamp(1rem,2.2vw,1.2rem); line-height:1.6; color:#cfcfcf;
