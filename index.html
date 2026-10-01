@@ -228,115 +228,179 @@
             50% { transform: translate(-50%, 0.45rem); }
         }
 
-        /* ------------------------------------------------------------ deck */
+        /* ------------------------------------------ problem + solution */
 
-        .deck {
+        .half {
             position: relative;
-        }
-
-        .slide {
             min-height: 100vh;
             min-height: 100svh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding-top: var(--bar-h);
+            padding: calc(var(--bar-h) + clamp(2rem, 6vh, 4rem)) clamp(1.25rem, 6vw, 5rem) clamp(2rem, 6vh, 4rem);
+            overflow: hidden;
         }
 
-        .slide figure {
-            margin: 0;
+        .half-problem {
+            background: #16171a;   /* the deck slides' own colour */
+        }
+
+        /* The solution sits over a render: the answer arrives with the ship. */
+        .half-bg {
+            position: absolute;
+            inset: 0;
+            background: url("./assets/hero/water-low-1672.webp") center / cover no-repeat;
+        }
+
+        .half-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right,
+                    rgba(8, 8, 8, 0.86) 0%,
+                    rgba(8, 8, 8, 0.7) 55%,
+                    rgba(8, 8, 8, 0.45) 100%);
+        }
+
+        .half-inner {
+            position: relative;
             width: 100%;
-            height: 100%;
+            max-width: 78rem;
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            font-size: 0.78rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .half h2 {
+            margin-top: 0.6rem;
+            font-size: clamp(1.9rem, 4.6vw, 3.4rem);
+            font-weight: 500;
+            line-height: 1.12;
+            letter-spacing: -0.01em;
+            text-wrap: balance;
+        }
+
+        .tiles {
+            list-style: none;
+            margin: clamp(2.5rem, 8vh, 5rem) 0 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(1.5rem, 3vw, 3rem);
+        }
+
+        .tiles li {
+            border-top: 1px solid #4a4b4f;
+            padding-top: 1.1rem;
+        }
+
+        /* Problems get a grey rule, answers the orange one. */
+        .half-solution .tiles li {
+            border-top-color: var(--orange);
+        }
+
+        .tiles .num {
+            font-size: 0.85rem;
+            color: var(--orange);
+        }
+
+        .tiles h3 {
+            margin: 0.7rem 0 0;
+            font-size: clamp(1.4rem, 2.4vw, 2rem);
+            font-weight: 400;
+            line-height: 1.15;
+        }
+
+        .tiles p {
+            margin-top: 0.9rem;
+            font-size: clamp(0.98rem, 1.2vw, 1.1rem);
+            line-height: 1.5;
+            color: #c9c9c9;
+            max-width: 26rem;
+        }
+
+        @media (max-width: 760px) {
+            .tiles {
+                grid-template-columns: 1fr;
+                gap: 1.6rem;
+            }
+        }
+
+        /* ?combined: both halves on one screen, problem row over answer row. */
+        .combined .ps {
+            min-height: 100vh;
+            min-height: 100svh;
             display: flex;
+            flex-direction: column;
+            scroll-snap-align: start;
+            background: #16171a;
+        }
+
+        .combined .half {
+            min-height: 0;
+            flex: 1;
+            scroll-snap-align: none;
+            padding-top: clamp(1.5rem, 4vh, 2.5rem);
+            padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
+        }
+
+        .combined .half-problem {
+            padding-top: calc(var(--bar-h) + clamp(1.5rem, 4vh, 2.5rem));
+        }
+
+        .combined .half h2 {
+            font-size: clamp(1.5rem, 3vw, 2.3rem);
+        }
+
+        .combined .tiles {
+            margin-top: clamp(1.2rem, 3.5vh, 2.2rem);
+        }
+
+        .combined .tiles p {
+            margin-top: 0.5rem;
+        }
+
+        /* ------------------------------------------------- mockup switch */
+
+        .mock-switch {
+            position: fixed;
+            left: 0.75rem;
+            bottom: 0.75rem;
+            z-index: 25;
+            display: flex;
+            gap: 0.8rem;
             align-items: center;
-            justify-content: center;
+            padding: 0.45rem 0.8rem;
+            border-radius: 0.3rem;
+            background: rgba(17, 17, 17, 0.85);
+            border: 1px dashed var(--orange);
+            font-family: Genos, system-ui, sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
         }
 
-        .slide img {
-            display: block;
-            max-width: 100%;
-            max-height: calc(100vh - var(--bar-h));
-            max-height: calc(100svh - var(--bar-h));
-            width: auto;
-            height: auto;
-            object-fit: contain;
+        .mock-switch span {
+            color: var(--orange);
         }
 
-        /* A rotated phone is a 16:9-ish viewport — the slides' own shape.
-           Reserving bar height there wastes the whole point of rotating, so
-           the translucent bar overlays the slide edges instead and the slide
-           takes the full height. Keyed on pointer:coarse + orientation, NOT
-           a pixel height cutoff — height thresholds proved unreliable on a
-           real iPhone (whose reported landscape height defied the 520/620px
-           nets), while "touch device, rotated" is exactly the intent. */
-        @media (pointer: coarse) and (orientation: landscape) {
-            .slide {
-                padding-top: 0;
-            }
-
-            .slide img {
-                height: 100vh;
-                height: 100svh;
-                max-height: none;
-                width: auto;
-                max-width: 100vw;
-                object-fit: contain;
-            }
+        .mock-switch a {
+            color: var(--muted);
+            text-decoration: none;
         }
 
-        /* Phones get decisive snapping: momentum flicks always come to rest
-           on a slide, never between two. Desktop keeps proximity so trackpad
-           browsing is never fought. */
+        .mock-switch a.on {
+            color: #fff;
+        }
+
+        /* Phones get decisive snapping (kept from the deck section). */
         @media (pointer: coarse) {
             html {
                 scroll-snap-type: y mandatory;
             }
-        }
-
-        /* --------------------------------------------------------- closing */
-
-        .closing {
-            min-height: 55vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(1.6rem, 4vh, 2.6rem);
-            padding: 4rem 1.5rem;
-            text-align: center;
-        }
-
-        .closing .lockup {
-            height: 2rem;
-            width: auto;
-            opacity: 0.9;
-        }
-
-        .closing-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.9rem;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* The two calls to action from the top bar, repeated as the deck's
-           payoff — horizontal, echoing the bar itself. */
-        .closing-stack {
-            display: flex;
-            flex-direction: row;
-            gap: 0.9rem;
-        }
-
-        .closing-stack .btn {
-            text-align: center;
-        }
-
-        /* Two lines so the button stays compact beside the berry pair. */
-        .btn-twoline {
-            white-space: normal;
-            text-align: center;
-            line-height: 1.3;
         }
 
         /* --------------------------------------------------- reduced motion */
@@ -389,248 +453,89 @@
 
             <div class="hero-text">
                 <img class="lockup" src="./assets/logo.svg" alt="">
-                <h1>The sustainable middle option for global freight.</h1>
-                <p class="sub">And a first step toward much more. Join us.</p>
+                <h1>Walking on clouds for your freight.</h1>
+                <p class="sub">The sustainable middle option for international shipping.</p>
                 <div class="hero-actions">
-                    <a class="btn btn-primary" href="#slide-2" data-track="explore">EXPLORE THE EAS PROJECT</a>
+                    <a class="btn btn-primary" href="#problem" data-track="explore">EXPLORE THE EAS PROJECT</a>
                     <a class="btn btn-secondary" href="/knowledgebase" data-track="kb">EXPLORE THE KNOWLEDGE BASE</a>
                 </div>
             </div>
 
-            <a class="chev" href="#slide-2" aria-label="Scroll down to the pitch deck">
+            <a class="chev" href="#problem" aria-label="Scroll down">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <path d="M6 9l6 6 6-6"></path>
                 </svg>
             </a>
         </section>
 
-        <!-- ============================================================ deck
-             The public pitch deck, slides 1-15, as rendered images. Each
-             figure pairs a short alt with the slide's real copy as structured
-             off-screen HTML — visitors see the artwork; screen readers and
-             search engines get the argument. -->
-        <div class="deck" aria-label="The EAS pitch deck">
-
-            <section class="slide snap" id="slide-2">
-                <figure>
-                    <img src="./assets/deck/slide-02-2160.webp"
-                        srcset="./assets/deck/slide-02-1440.webp 1440w, ./assets/deck/slide-02-2160.webp 2160w, ./assets/deck/slide-02-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Diagram comparing a conventional cigar airship to the Sunship inside their bounding spheres.">
-                    <figcaption class="visually-hidden">
-                        <h2>Most large airships ever built have been the wrong shape.</h2>
-                        <p>Not underpowered. Not badly engineered. An airship is a machine for enclosing volume,
-                            and a cigar is one of the worst shapes for the job.</p>
-                        <p>Conventional cigar: VS 25, volume efficiency about 3%. Sunship: VS 1.6, volume
-                            efficiency about 60%.</p>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-3">
-                <figure>
-                    <img src="./assets/deck/slide-03-2160.webp"
-                        srcset="./assets/deck/slide-03-1440.webp 1440w, ./assets/deck/slide-03-2160.webp 2160w, ./assets/deck/slide-03-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Three columns: ocean shipping, international air freight, and the missing middle between them.">
-                    <figcaption class="visually-hidden">
-                        <h2>Over-ocean freight is trapped between two bad options. Both are getting worse.</h2>
-                        <ul>
-                            <li>Ocean shipping: about 1 gigatonne of CO2 emitted annually — 3% of the global total.</li>
-                            <li>International air freight: about 50 times the CO2 per tonne-kilometre of ocean
-                                shipping. Fast but expensive.</li>
-                            <li>The missing middle: no scalable, sustainable option between them.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-4">
-                <figure>
-                    <img src="./assets/deck/slide-04-2160.webp"
-                        srcset="./assets/deck/slide-04-1440.webp 1440w, ./assets/deck/slide-04-2160.webp 2160w, ./assets/deck/slide-04-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="The opportunity, in three numbered points.">
-                    <figcaption class="visually-hidden">
-                        <h2>The industry has wanted one thing for 50 years: air-freight speed at near
-                            ocean-freight cost.</h2>
-                        <ul>
-                            <li>Materially faster than ships — days, not weeks, across an ocean.</li>
-                            <li>Far cheaper than air freight — a fraction of the cost per tonne.</li>
-                            <li>Zero emissions — no lifting gas, no fuel burn.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-5">
-                <figure>
-                    <img src="./assets/deck/slide-05-2160.webp"
-                        srcset="./assets/deck/slide-05-1440.webp 1440w, ./assets/deck/slide-05-2160.webp 2160w, ./assets/deck/slide-05-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Three historical failure causes: helium, hydrogen, constant buoyancy.">
-                    <figcaption class="visually-hidden">
-                        <h2>Airships have been tried for 200 years. The reason they failed has been misdiagnosed.</h2>
-                        <ul>
-                            <li>Helium — scarce, expensive, and a finite resource.</li>
-                            <li>Hydrogen — lifts well, but dangerous. No modern regulator will certify it.</li>
-                            <li>Constant buoyancy — makes landing, mooring and cargo exchange genuinely hard.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-6">
-                <figure>
-                    <img src="./assets/deck/slide-06-2160.webp"
-                        srcset="./assets/deck/slide-06-1440.webp 1440w, ./assets/deck/slide-06-2160.webp 2160w, ./assets/deck/slide-06-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Sphere, Sunship and cigar compared: volume efficiency against the ability to fly straight.">
-                    <figcaption class="visually-hidden">
-                        <h2>We found the right shape, and built the mathematics to prove it.</h2>
-                        <p>A sphere is all volume but cannot fly straight. A cigar flies straight but encloses
-                            almost nothing. The right answer sits between them: the gömböc-like Sunship form —
-                            VS around 1.6, volume efficiency around 60%.</p>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-7">
-                <figure>
-                    <img src="./assets/deck/slide-07-2160.webp"
-                        srcset="./assets/deck/slide-07-1440.webp 1440w, ./assets/deck/slide-07-2160.webp 2160w, ./assets/deck/slide-07-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="The Sunship with its headline specification figures.">
-                    <figcaption class="visually-hidden">
-                        <h2>Ultra-heavy-lift cargo flight on hot air alone. No helium. No hydrogen.</h2>
-                        <ul>
-                            <li>Cruise speed: about 120 km/h.</li>
-                            <li>Payload class: 500 to 12,000 tonnes.</li>
-                            <li>Range: trans-oceanic.</li>
-                            <li>Payload advantage: 19× a conventional airship of the same maximum size.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-8">
-                <figure>
-                    <img src="./assets/deck/slide-08-2160.webp"
-                        srcset="./assets/deck/slide-08-1440.webp 1440w, ./assets/deck/slide-08-2160.webp 2160w, ./assets/deck/slide-08-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Three new cargo categories, numbered one to three.">
-                    <figcaption class="visually-hidden">
-                        <h2>Sunship creates three cargo categories that no aircraft can serve today.</h2>
-                        <p>Conventional air freight moves existing goods faster. Sunship opens entirely new
-                            freight classes, defined by volume, not speed.</p>
-                        <ul>
-                            <li>Atmospheric water collection — water-stressed markets pay $5–50 per cubic metre
-                                delivered. No aircraft has the volume-to-value ratio to make water a cargo.</li>
-                            <li>Hydrogen transport — hydrogen's constraint is distribution, not production; bulk
-                                delivery to pipeline-dark markets becomes viable as green supply scales.</li>
-                            <li>Dynamic spot markets — no fixed routes, no hub dependency: disaster relief, mine
-                                builds, agricultural surges.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-9">
-                <figure>
-                    <img src="./assets/deck/slide-09-2160.webp"
-                        srcset="./assets/deck/slide-09-1440.webp 1440w, ./assets/deck/slide-09-2160.webp 2160w, ./assets/deck/slide-09-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="The Sunship's five supporting systems, labelled.">
-                    <figcaption class="visually-hidden">
-                        <h2>Supporting systems are enabled by existing technology.</h2>
-                        <ul>
-                            <li>Thermal envelope — Pyrogel aerogel insulation: commercial, lightweight, rated
-                                well beyond the temperatures involved.</li>
-                            <li>Heating — grid-charged thermal batteries. A very large, very efficient air
-                                fryer. Electric, not fuel-burning.</li>
-                            <li>Structure — a rigid-geodesic frame in densified wood and composite.</li>
-                            <li>Propulsion — hydrogen fuel cells. Zero emissions in flight.</li>
-                            <li>Drag — boundary-layer ingestion and an adaptive rear mast.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-10">
-                <figure>
-                    <img src="./assets/deck/slide-10-2160.webp"
-                        srcset="./assets/deck/slide-10-1440.webp 1440w, ./assets/deck/slide-10-2160.webp 2160w, ./assets/deck/slide-10-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Four validation points: wind-tunnel tested, published, protected, backed.">
-                    <figcaption class="visually-hidden">
-                        <h2>Our patent-pending breakthrough design, with early validation.</h2>
-                        <ul>
-                            <li>Wind-tunnel tested — core aerodynamic assumptions validated; independently
-                                assessed at TRL 3.</li>
-                            <li>Published — the full mathematics, with a front-cover feature in Airship, the
-                                Airship Association journal.</li>
-                            <li>Protected — patent pending in Australia, registered designs filed,
-                                international PCT filing underway.</li>
-                            <li>Backed — accepted into Stone &amp; Chalk; academic advisor Dr Iran Sanadzadeh,
-                                University of Adelaide.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-            <section class="slide snap" id="slide-11">
-                <figure>
-                    <img src="./assets/deck/slide-11-2160.webp"
-                        srcset="./assets/deck/slide-11-1440.webp 1440w, ./assets/deck/slide-11-2160.webp 2160w, ./assets/deck/slide-11-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="Business model diagram: port-to-port, over-ocean, zero-emission, direct.">
-                    <figcaption class="visually-hidden">
-                        <h2>Electric Air Shipping does not sell airships. We will operate the freight layer.</h2>
-                        <ul>
-                            <li>Buy capacity, not aircraft — customers book space on a route, the way they buy
-                                ocean or air freight today.</li>
-                            <li>Plugs into existing ports — works with current land logistics; no new global
-                                infrastructure required first.</li>
-                            <li>Earns carbon credits on every over-ocean leg, growing as the IMO framework
-                                tightens toward 2050.</li>
-                            <li>Target around 10¢ per tonne-km — ship-like cost, a fraction of the time, none
-                                of the emissions.</li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-
-
-
-
-            <section class="slide snap" id="slide-15">
-                <figure>
-                    <img src="./assets/deck/slide-15-2160.webp"
-                        srcset="./assets/deck/slide-15-1440.webp 1440w, ./assets/deck/slide-15-2160.webp 2160w, ./assets/deck/slide-15-2880.webp 2880w"
-                        sizes="100vw" width="2880" height="1620" loading="lazy"
-                        alt="The Sunship over the ocean at sunset. The sustainable middle option for global freight. Join us.">
-                    <figcaption class="visually-hidden">
-                        <h2>The sustainable middle option for global freight.</h2>
-                        <p>And a first step toward much more. Join us.</p>
-                    </figcaption>
-                </figure>
-            </section>
-        </div>
-
-        <!-- ==================================================== closing panel
-             Its own dark panel rather than buttons floated over the last
-             slide, so it is readable at every screen size and gives the deck
-             a clear end. -->
-        <section class="closing snap" aria-label="What next">
-            <img class="lockup" src="./assets/logo.svg" alt="">
-            <div class="closing-actions">
-                <div class="closing-stack">
-                    <a class="btn btn-primary" href="mailto:contact@electricairshipping.com" data-track="contact">CONTACT</a>
-                    <a class="btn btn-primary" href="#" data-nl-open data-track="receive">RECEIVE</a>
+        <!-- ================================================ problem + solution
+             MOCKUP (landing-mockup branch, not for release as-is).
+             Two halves that mirror each other: tile N of the solution
+             answers tile N of the problem. By default each half is its own
+             screen; ?combined puts both on one screen, problem row above
+             solution row, so each answer sits directly under its problem. -->
+        <section class="ps" id="problem" aria-label="The problem, and the Sunship">
+            <div class="half half-problem snap">
+                <div class="half-inner">
+                    <p class="eyebrow">The problem</p>
+                    <h2>International freight is locked in.</h2>
+                    <ol class="tiles">
+                        <li>
+                            <span class="num">1</span>
+                            <h3>Too slow, or too&nbsp;expensive</h3>
+                            <p>Ships take weeks. Air freight costs many times more, with
+                                chargeable-weight penalties on top.</p>
+                        </li>
+                        <li>
+                            <span class="num">2</span>
+                            <h3>Too polluting</h3>
+                            <p>Ocean shipping alone emits about a gigatonne of CO₂ a year,
+                                around 3% of the global total.</p>
+                        </li>
+                        <li>
+                            <span class="num">3</span>
+                            <h3>Too little choice</h3>
+                            <p>Nothing in between. Shippers are stuck with one bad option
+                                or the other.</p>
+                        </li>
+                    </ol>
                 </div>
-                <a class="btn btn-secondary btn-twoline" href="/knowledgebase" data-track="kb">EXPLORE THE<br>KNOWLEDGE BASE</a>
+            </div>
+
+            <div class="half half-solution snap" id="solution">
+                <div class="half-bg" aria-hidden="true"></div>
+                <div class="half-inner">
+                    <p class="eyebrow">The Sunship</p>
+                    <h2>A new way across the ocean.</h2>
+                    <ol class="tiles">
+                        <li>
+                            <span class="num">1</span>
+                            <h3>Affordable</h3>
+                            <p>Days, not weeks, at a fraction of the cost of air freight.</p>
+                        </li>
+                        <li>
+                            <span class="num">2</span>
+                            <h3>Sustainable</h3>
+                            <p>Lifted by electrically heated air. No helium, no hydrogen,
+                                no emissions in flight.</p>
+                        </li>
+                        <li>
+                            <span class="num">3</span>
+                            <h3>Adaptable</h3>
+                            <p>No fixed routes, no hub dependency. Freight goes where it
+                                needs to go.</p>
+                        </li>
+                    </ol>
+                </div>
             </div>
         </section>
+
+        <!-- MOCKUP ONLY: layout switch for review. Remove before release. -->
+        <div class="mock-switch" role="group" aria-label="Mockup layout">
+            <span>MOCKUP</span>
+            <a href="?" data-layout="separate">Separate</a>
+            <a href="?combined" data-layout="combined">Combined</a>
+        </div>
     </main>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -662,6 +567,11 @@
                 target.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth' });
             });
         });
+
+        /* MOCKUP ONLY: ?combined layout switch. */
+        const combined = new URLSearchParams(location.search).has('combined');
+        document.body.classList.toggle('combined', combined);
+        document.querySelector(`.mock-switch [data-layout="${combined ? 'combined' : 'separate'}"]`).classList.add('on');
 
         /* Attach the four rotating hero layers AFTER window load, staggered,
          * so they can never compete with the lead image for first-paint
