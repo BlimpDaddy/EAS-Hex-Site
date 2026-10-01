@@ -14,18 +14,17 @@
  *   -- daily counts per event
  *   SELECT date(ts) d, event, COUNT(*) n FROM events
  *   GROUP BY d, event ORDER BY d DESC, n DESC;
- *   -- deck completion vs entry
- *   SELECT (SELECT COUNT(*) FROM events WHERE event='deck_end') * 100.0
- *        / MAX(1, (SELECT COUNT(*) FROM events WHERE event='explore'))
- *        AS pct_reached_end;
+ *
+ * Retired 2026-10 with the homepage deck: explore, deck_end. Their old rows
+ * stay in the table; new ones are refused.
  */
 
 const EVENTS = new Set([
-    'explore',      // hero: EXPLORE THE EAS PROJECT
-    'kb',           // any EXPLORE THE KNOWLEDGE BASE button
-    'deck_end',     // slide 15 actually seen
-    'contact',      // CONTACT, top bar or closing panel
-    'receive',      // RECEIVE opened
+    'kb',           // Knowledge Base: hero button or menu
+    'contact',      // CONTACT in the top bar
+    'receive',      // RECEIVE: top bar, or the homepage Jellyfish box
+    'receive-news', // the Jellyfish box on the news page
+    'news',         // NEWS in the menu, or All news on the homepage
     'gate_ask',     // hex 6: ASK NICELY submitted
     'gate_unlock',  // hex 6: correct password entered
 ]);

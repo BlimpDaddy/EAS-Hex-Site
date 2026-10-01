@@ -14,7 +14,7 @@
 
     var SECTIONS = [
         { label: 'NEWS', href: '/news/', track: 'news' },
-        { label: 'KNOWLEDGE BASE', href: '/knowledgebase/', track: 'knowledgebase' }
+        { label: 'KNOWLEDGE BASE', href: '/knowledgebase/', track: 'kb' }
     ];
 
     function build() {
