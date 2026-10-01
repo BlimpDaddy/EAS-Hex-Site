@@ -230,18 +230,26 @@
 
         /* ------------------------------------------ problem + solution */
 
-        .half {
-            position: relative;
-            min-height: 100vh;
-            min-height: 100svh;
+        /* One screen: the problem row over the answer row, so each answer
+           sits directly under the problem it solves. */
+        /* Sized to the space BELOW the bar: snapping lands the section at
+           scroll-padding-top (the bar height), so a full-viewport section
+           would lose its bottom bar-height to the fold. */
+        .ps {
+            min-height: calc(100vh - var(--bar-h));
+            min-height: calc(100svh - var(--bar-h));
             display: flex;
-            align-items: center;
-            padding: calc(var(--bar-h) + clamp(2rem, 6vh, 4rem)) clamp(1.25rem, 6vw, 5rem) clamp(2rem, 6vh, 4rem);
-            overflow: hidden;
+            flex-direction: column;
+            background: #16171a;   /* the deck slides' own colour */
         }
 
-        .half-problem {
-            background: #16171a;   /* the deck slides' own colour */
+        .half {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: clamp(1.5rem, 4vh, 2.5rem) clamp(1.25rem, 6vw, 5rem);
+            overflow: hidden;
         }
 
         /* The solution sits over a render: the answer arrives with the ship. */
@@ -277,7 +285,7 @@
 
         .half h2 {
             margin-top: 0.6rem;
-            font-size: clamp(1.9rem, 4.6vw, 3.4rem);
+            font-size: clamp(1.5rem, 3vw, 2.3rem);
             font-weight: 500;
             line-height: 1.12;
             letter-spacing: -0.01em;
@@ -286,7 +294,7 @@
 
         .tiles {
             list-style: none;
-            margin: clamp(2.5rem, 8vh, 5rem) 0 0;
+            margin: clamp(1.2rem, 3.5vh, 2.2rem) 0 0;
             padding: 0;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -316,7 +324,7 @@
         }
 
         .tiles p {
-            margin-top: 0.9rem;
+            margin-top: 0.5rem;
             font-size: clamp(0.98rem, 1.2vw, 1.1rem);
             line-height: 1.5;
             color: #c9c9c9;
@@ -328,72 +336,6 @@
                 grid-template-columns: 1fr;
                 gap: 1.6rem;
             }
-        }
-
-        /* ?combined: both halves on one screen, problem row over answer row. */
-        .combined .ps {
-            min-height: 100vh;
-            min-height: 100svh;
-            display: flex;
-            flex-direction: column;
-            scroll-snap-align: start;
-            background: #16171a;
-        }
-
-        .combined .half {
-            min-height: 0;
-            flex: 1;
-            scroll-snap-align: none;
-            padding-top: clamp(1.5rem, 4vh, 2.5rem);
-            padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
-        }
-
-        .combined .half-problem {
-            padding-top: calc(var(--bar-h) + clamp(1.5rem, 4vh, 2.5rem));
-        }
-
-        .combined .half h2 {
-            font-size: clamp(1.5rem, 3vw, 2.3rem);
-        }
-
-        .combined .tiles {
-            margin-top: clamp(1.2rem, 3.5vh, 2.2rem);
-        }
-
-        .combined .tiles p {
-            margin-top: 0.5rem;
-        }
-
-        /* ------------------------------------------------- mockup switch */
-
-        .mock-switch {
-            position: fixed;
-            left: 0.75rem;
-            bottom: 0.75rem;
-            z-index: 25;
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-            padding: 0.45rem 0.8rem;
-            border-radius: 0.3rem;
-            background: rgba(17, 17, 17, 0.85);
-            border: 1px dashed var(--orange);
-            font-family: Genos, system-ui, sans-serif;
-            font-size: 1rem;
-            letter-spacing: 0.05em;
-        }
-
-        .mock-switch span {
-            color: var(--orange);
-        }
-
-        .mock-switch a {
-            color: var(--muted);
-            text-decoration: none;
-        }
-
-        .mock-switch a.on {
-            color: #fff;
         }
 
         /* Phones get decisive snapping (kept from the deck section). */
@@ -469,13 +411,10 @@
         </section>
 
         <!-- ================================================ problem + solution
-             MOCKUP (landing-mockup branch, not for release as-is).
-             Two halves that mirror each other: tile N of the solution
-             answers tile N of the problem. By default each half is its own
-             screen; ?combined puts both on one screen, problem row above
-             solution row, so each answer sits directly under its problem. -->
-        <section class="ps" id="problem" aria-label="The problem, and the Sunship">
-            <div class="half half-problem snap">
+             Problem row over solution row on one screen: tile N of the
+             solution answers tile N of the problem. -->
+        <section class="ps snap" id="problem" aria-label="The problem, and the Sunship">
+            <div class="half half-problem">
                 <div class="half-inner">
                     <p class="eyebrow">The problem</p>
                     <h2>International freight is locked in.</h2>
@@ -489,24 +428,23 @@
                         <li>
                             <span class="num">2</span>
                             <h3>Too polluting</h3>
-                            <p>Ocean shipping alone emits about a gigatonne of CO₂ a year,
-                                around 3% of the global total.</p>
+                            <p>Ocean shipping emits 3% of total global CO₂ emissions.</p>
                         </li>
                         <li>
                             <span class="num">3</span>
                             <h3>Too little choice</h3>
-                            <p>Nothing in between. Shippers are stuck with one bad option
-                                or the other.</p>
+                            <p>Nothing in between. Hub-and-spoke routing, and inefficiencies
+                                dictated by geography.</p>
                         </li>
                     </ol>
                 </div>
             </div>
 
-            <div class="half half-solution snap" id="solution">
+            <div class="half half-solution" id="solution">
                 <div class="half-bg" aria-hidden="true"></div>
                 <div class="half-inner">
                     <p class="eyebrow">The Sunship</p>
-                    <h2>A new way across the ocean.</h2>
+                    <h2>A new way, over the ocean.</h2>
                     <ol class="tiles">
                         <li>
                             <span class="num">1</span>
@@ -530,12 +468,6 @@
             </div>
         </section>
 
-        <!-- MOCKUP ONLY: layout switch for review. Remove before release. -->
-        <div class="mock-switch" role="group" aria-label="Mockup layout">
-            <span>MOCKUP</span>
-            <a href="?" data-layout="separate">Separate</a>
-            <a href="?combined" data-layout="combined">Combined</a>
-        </div>
     </main>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -567,11 +499,6 @@
                 target.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth' });
             });
         });
-
-        /* MOCKUP ONLY: ?combined layout switch. */
-        const combined = new URLSearchParams(location.search).has('combined');
-        document.body.classList.toggle('combined', combined);
-        document.querySelector(`.mock-switch [data-layout="${combined ? 'combined' : 'separate'}"]`).classList.add('on');
 
         /* Attach the four rotating hero layers AFTER window load, staggered,
          * so they can never compete with the lead image for first-paint
