@@ -5,7 +5,7 @@
  * tag; it does not carry any menu markup of its own. Adding a section later
  * means adding one line to SECTIONS below, and every page gets it.
  *
- * Why a menu at all, for one link: the bar already holds CONTACT and RECEIVE,
+ * Why a menu rather than more words in the bar: the bar already holds CONTACT and RECEIVE,
  * and a third word overflows a 390px phone (measured). The menu keeps the bar
  * fixed-width no matter how many sections there are.
  */
@@ -13,7 +13,8 @@
     'use strict';
 
     var SECTIONS = [
-        { label: 'NEWS', href: '/news/', track: 'news' }
+        { label: 'NEWS', href: '/news/', track: 'news' },
+        { label: 'KNOWLEDGE BASE', href: '/knowledgebase/', track: 'knowledgebase' }
     ];
 
     function build() {
