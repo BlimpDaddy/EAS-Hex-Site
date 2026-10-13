@@ -250,6 +250,17 @@
     color: var(--berry);
 }
 
+/* The Turnstile check is a fixed 300px wide. At phone width the 2rem side
+   padding left ~273px and the widget ran into the right border, so phones
+   get a slightly wider box with slimmer sides. */
+@media (max-width: 420px) {
+    .nl-box {
+        width: 94vw;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
 .nl-box input {
     font-family: inherit;
     font-size: 1rem;
