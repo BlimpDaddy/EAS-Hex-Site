@@ -75,7 +75,7 @@ working assumption. None are measured.
 - [The Shape-Volume Scalar (PDF)](https://drive.google.com/file/d/1_xdBSdVZ-B19MCYf1XynxpSxqAu0TEsW/view):
   the mathematics of the VS/VE framework. Published in *Airship*, the journal of
   the Airship Association, July 2026.
-- The full 60-page Sunship Conceptual Design is free via the access gate at
+- The full 60-page Sunship Conceptual Design is free on request at
   knowledge base point 5 — ask nicely.
 
 ## Jellyfish (the monthly update)

@@ -351,18 +351,13 @@
         <circle class="video-portal" cx="50" cy="50" r="27.5"></circle>
     </svg>
 
-    <!-- Point 5 access gate. Shares the newsletter modal's styles (.nl-*).
-         The gate is marketing theatre by design — the real payoff is the
-         ASK NICELY funnel; every request becomes a verified address. -->
-    <div class="nl-overlay" data-gate-overlay role="dialog" aria-modal="true" aria-label="Access required">
+    <!-- Point 5: ask nicely. Shares the newsletter modal's styles (.nl-*).
+         One box, no password: an email address opens the document at once
+         and a copy of the link goes to that inbox. ASK NICELY is the whole
+         personality — no heading on purpose. -->
+    <div class="nl-overlay" data-gate-overlay role="dialog" aria-modal="true" aria-label="Sunship Conceptual Design">
         <div class="nl-box">
-            <div>Access required</div>
-            <div data-gate-step1>
-                <label class="visually-hidden" for="gate-pw">Access code</label>
-                <input id="gate-pw" type="password" placeholder="access code" data-gate-pw
-                    style="width:100%" autocomplete="off">
-            </div>
-            <div data-gate-step2 style="display:none">
+            <div>
                 <label class="visually-hidden" for="gate-email">Your email address</label>
                 <input id="gate-email" type="email" placeholder="your@email.com" data-gate-email
                     style="width:100%">
@@ -376,7 +371,6 @@
             <div class="nl-actions">
                 <a data-gate-cancel tabindex="0" role="button">CANCEL</a>
                 <a data-gate-ask tabindex="0" role="button">ASK NICELY</a>
-                <a data-gate-ok tabindex="0" role="button">OK</a>
             </div>
         </div>
     </div>
@@ -421,10 +415,10 @@
             },
             {
                 title: "View the full:",
-                // Point 5 (index 5) is gated. The document URL is deliberately NOT in
-                // this file — the server returns it only to a correct
-                // password (see /api/gate), and an unlocked device keeps it
-                // in localStorage. View-source reveals nothing.
+                // Point 5 (index 5) asks for an email. The document URL is
+                // deliberately NOT in this file — the server returns it only
+                // to an ask-nicely submission (see /api/waitlist), and that
+                // device keeps it in localStorage. View-source reveals nothing.
                 subtitle: null,
             },
         ];
@@ -470,47 +464,40 @@
             circle.addEventListener("click", () => updateSelection(circle.dataset.circle));
         }
 
-        /* ------------------------------- the point 5 access gate ---------- */
+        /* ------------------------------- point 5: ask nicely ------------- */
         (() => {
             // Same site-wide key the newsletter uses; registered to the domain.
             const TURNSTILE_SITEKEY = '0x4AAAAAAEKubehZQp3K3TbK';
 
             const overlay = document.querySelector('[data-gate-overlay]');
-            const step1 = document.querySelector('[data-gate-step1]');
-            const step2 = document.querySelector('[data-gate-step2]');
-            const pwIn = document.querySelector('[data-gate-pw]');
             const emailIn = document.querySelector('[data-gate-email]');
             const consent = document.querySelector('[data-gate-consent]');
             const msg = document.querySelector('[data-gate-msg]');
             const askBtn = document.querySelector('[data-gate-ask]');
-            const okBtn = document.querySelector('[data-gate-ok]');
             let busy = false;
             let tsWidget = null;
-
-            const setStep = (n) => {
-                step1.style.display = n === 1 ? '' : 'none';
-                step2.style.display = n === 2 ? '' : 'none';
-                askBtn.style.display = n === 1 ? '' : 'none';
-                okBtn.textContent = n === 1 ? 'OK' : 'SEND';
-                msg.textContent = '';
-                (n === 1 ? pwIn : emailIn).focus();
-            };
 
             const open = () => {
                 overlay.classList.add('open');
                 // Fresh state every open: a box ticked during an earlier
                 // visit to the modal must not silently ride along.
                 consent.checked = false;
-                pwIn.value = '';
-                setStep(1);
+                msg.textContent = '';
+                emailIn.focus();
+                if (tsWidget === null && window.turnstile) {
+                    tsWidget = window.turnstile.render(document.querySelector('[data-gate-turnstile]'), {
+                        sitekey: TURNSTILE_SITEKEY,
+                        theme: 'dark',
+                    });
+                }
             };
             const close = () => {
                 if (busy) return;
                 overlay.classList.remove('open');
             };
 
-            // The slot-6 link is re-rendered on every selection, so listen on
-            // the container, not the link.
+            // The point-5 link is re-rendered on every selection, so listen
+            // on the container, not the link.
             elements.subtitle.addEventListener('click', (e) => {
                 const a = e.target.closest('[data-gate-open]');
                 if (a) { e.preventDefault(); open(); }
@@ -519,47 +506,10 @@
             document.querySelector('[data-gate-cancel]').addEventListener('click', close);
             overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-            pwIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') okBtn.click(); });
-            emailIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') okBtn.click(); });
+            emailIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') askBtn.click(); });
 
-            askBtn.addEventListener('click', () => {
-                setStep(2);
-                if (tsWidget === null && window.turnstile) {
-                    tsWidget = window.turnstile.render(document.querySelector('[data-gate-turnstile]'), {
-                        sitekey: TURNSTILE_SITEKEY,
-                        theme: 'dark',
-                    });
-                }
-            });
-
-            const submitPassword = async () => {
-                busy = true;
-                msg.textContent = '…';
-                try {
-                    const res = await fetch('/api/gate', {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/json' },
-                        body: JSON.stringify({ password: pwIn.value }),
-                    });
-                    const data = await res.json();
-                    if (data.ok && data.url) {
-                        localStorage.setItem(DOC_KEY, data.url);
-                        if (window.easTrack) window.easTrack('gate_unlock');
-                        msg.textContent = 'Welcome ✓';
-                        updateSelection(5);   // point 5 becomes a plain link on this device
-                        setTimeout(() => { busy = false; close(); window.open(data.url, '_blank', 'noopener'); }, 600);
-                        return;
-                    }
-                    msg.textContent = data.error === 'server'
-                        ? 'Something went wrong — please try again later.'
-                        : 'Access Denied';
-                } catch {
-                    msg.textContent = 'Something went wrong — please try again later.';
-                }
-                busy = false;
-            };
-
-            const submitAsk = async () => {
+            askBtn.addEventListener('click', async () => {
+                if (busy) return;
                 const email = emailIn.value.trim();
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
                     msg.textContent = 'Please enter a valid email address.';
@@ -573,8 +523,15 @@
                     msg.textContent = 'Please complete the verification check.';
                     return;
                 }
+
+                // Open the tab NOW, inside the click. A window.open after the
+                // fetch resolves is no longer a user gesture and popup
+                // blockers (Safari especially) swallow it. Pointed at the
+                // document once the server answers; closed if it refuses.
+                const tab = window.open('', '_blank');
+
                 busy = true;
-                msg.textContent = 'Submitting…';
+                msg.textContent = 'Opening…';
                 try {
                     const res = await fetch('/api/waitlist', {
                         method: 'POST',
@@ -586,33 +543,36 @@
                         }),
                     });
                     const data = await res.json();
-                    if (data.ok) {
+                    if (data.ok && data.url) {
+                        localStorage.setItem(DOC_KEY, data.url);
                         if (window.easTrack) window.easTrack('gate_ask');
-                        msg.textContent = data.status === 'code-sent'
-                            ? 'Code sent — check your email ✓'
-                            : 'Check your inbox to confirm ✓';
+                        updateSelection(5);   // point 5 becomes a plain link on this device
                         emailIn.value = '';
-                        setTimeout(() => { busy = false; close(); }, 2600);
+                        msg.textContent = 'Thank you ✓';
+                        if (tab) {
+                            tab.opener = null;
+                            tab.location.href = data.url;
+                        } else {
+                            // Blocked anyway: hand them the link instead.
+                            msg.innerHTML = `Thank you ✓ <a class="hyperlink" target="_blank" rel="noopener" href="${data.url}">Open the design</a>`;
+                            busy = false;
+                            return;
+                        }
+                        setTimeout(() => { busy = false; close(); }, 800);
                         return;
                     }
+                    tab?.close();
                     msg.textContent = data.error === 'invalid'
                         ? 'Please enter a valid email address.'
                         : data.error === 'turnstile'
                             ? 'Verification failed — please try again.'
-                            : data.error === 'email'
-                                ? 'Couldn’t send the email — please try again later.'
-                                : 'Something went wrong — please try again later.';
+                            : 'Something went wrong — please try again later.';
                     if (window.turnstile && tsWidget !== null) window.turnstile.reset(tsWidget);
                 } catch {
+                    tab?.close();
                     msg.textContent = 'Something went wrong — please try again later.';
                 }
                 busy = false;
-            };
-
-            okBtn.addEventListener('click', () => {
-                if (busy) return;
-                if (step1.style.display !== 'none') submitPassword();
-                else submitAsk();
             });
         })();
     </script>

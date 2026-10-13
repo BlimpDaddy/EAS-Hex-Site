@@ -4,9 +4,10 @@
  * The link from the confirmation email lands here. A valid token flips its
  * row to verified=1 and is cleared (single use).
  *
- * Design-doc requests get their ACCESS CODE on this page — deliberately
- * behind the click, so receiving the code and becoming a verified address
- * are the same act. Newsletter confirmations look exactly as before.
+ * Design-doc rows land here when the asker ticked the newsletter box (the
+ * confirm button in their copy-of-the-link email), or from an access-code
+ * email sent before 2026-10-13, when the gate still had a password. Both get
+ * the document link itself; there is no code any more.
  */
 
 const page = (title, body) =>
@@ -42,12 +43,9 @@ export async function onRequestGet({ request, env }) {
     }
 
     if (row.source === 'design-doc') {
-      const code = env.GATE_PASSWORD
-        ? `<p style="color:#eaeaea">Your access code:</p><p style="color:#c428a3;font-size:1.6em"><b>${env.GATE_PASSWORD}</b></p>`
-        : p('Your access code is on its way by email.');
+      const doc = env.GATE_DOC_URL ?? 'https://electricairshipping.com/knowledgebase';
       return page('You asked nicely ✓',
-        code +
-        p('Use it at <a href="https://electricairshipping.com/knowledgebase" style="color:#ff9900">the knowledge base</a>, point 5.') +
+        p(`Here's the <a href="${doc}" style="color:#ff9900">Sunship Conceptual Design</a>.`) +
         (row.nl_consent ? p('You\'ll also receive the EAS newsletter at this address.') : ''));
     }
 

@@ -1,7 +1,7 @@
 /**
  * One-click newsletter join — GET /api/join?t=TOKEN
  *
- * The link arrives in the access-code email, which only ever goes to an
+ * The link arrives in the copy-of-the-link email, and only ever goes to an
  * already-verified address; the token is minted per-send for that row. So a
  * click here is the address owner expressly asking for the newsletter — no
  * form, no re-entry, and a clean consent trail (nl_consent flips on the

@@ -3,17 +3,18 @@
  *
  * POST /api/waitlist  { email, tsToken, source?, nlConsent? }
  *   source: 'newsletter' (default — the RECEIVE modal)
- *         | 'design-doc' (the hex-6 gate's ASK NICELY)
+ *         | 'design-doc' (knowledge base point 5's ASK NICELY)
  *   nlConsent: design-doc only — the explicit, unticked-by-default box.
  *              RECEIVE signups are newsletter consent by definition.
  *
+ *   newsletter:
  *   → { ok: true,  status: 'sent' }       new signup, confirmation email sent
  *   → { ok: true,  status: 'resent' }     unconfirmed — confirmation re-sent
- *   → { ok: true,  status: 'already' }    newsletter: already confirmed
- *   → { ok: true,  status: 'code-sent' }  design-doc: already confirmed, the
- *                                         access code was emailed (never
- *                                         shown on screen — a stranger
- *                                         entering your address gets nothing)
+ *   → { ok: true,  status: 'already' }    already confirmed
+ *   design-doc:
+ *   → { ok: true,  url }                  the document opens at once; a copy
+ *                                         of the link is emailed (at most
+ *                                         once a day per address)
  *   → { ok: false, error: 'invalid' | 'turnstile' | 'email' | 'server' }
  *
  * CONSENT MODEL — two independent flags, never conflated:
@@ -25,16 +26,19 @@
  * added by a later request with the box ticked, never silently removed.
  *
  * Double opt-in: a signup stores verified=0 plus a one-time token and emails
- * a confirmation link (/api/confirm?t=TOKEN). Design-doc confirmations show
- * the access code on the confirmation page — behind the click on purpose, so
- * every request becomes a verified address (the Spam Act trail and the
- * lead-gen moment are the same mechanism).
+ * a confirmation link (/api/confirm?t=TOKEN).
+ *
+ * Design-doc requests are NOT verified before the document opens (decided
+ * 2026-10-13: the old password-by-email loop cost more leads than it
+ * protected). The address is stored unverified; the copy-of-the-link email is
+ * what a real address is for. Ticking the newsletter box adds a confirm
+ * button to that email — newsletter consent still needs the owner's click.
  *
  * Bindings/secrets on the WEBSITE Pages project:
  *   DB               — D1 database (eas_newsletter)
  *   TURNSTILE_SECRET — Turnstile secret key
  *   RESEND_API_KEY   — Resend sending-access key
- *   GATE_PASSWORD    — the access code (for the code-sent email)
+ *   GATE_DOC_URL     — the Conceptual Design link (never in page source)
  */
 
 async function ensureSchema(db) {
@@ -51,6 +55,7 @@ async function ensureSchema(db) {
     "source TEXT DEFAULT 'newsletter'",
     'nl_consent INTEGER NOT NULL DEFAULT 1',
     'doc_alert_utc TEXT',
+    'doc_sent_utc TEXT',
   ]) {
     try { await db.exec(`ALTER TABLE newsletter ADD COLUMN ${col}`); } catch { /* exists */ }
   }
@@ -78,17 +83,17 @@ async function sendEmail(env, to, subject, html) {
   return res.ok;
 }
 
-function confirmationEmail(env, email, token, source) {
+const confirmButton = (token) => {
   const link = `https://electricairshipping.com/api/confirm?t=${token}`;
-  const button =
-    `<p><a href="${link}" style="display:inline-block;background:#c428a3;color:#fff;padding:0.6em 1.2em;border-radius:4px;text-decoration:none">Confirm</a></p>` +
-    `<p style="font-size:0.85em;color:#666">Or paste this link into your browser:<br>${link}</p>` +
-    '<p style="font-size:0.85em;color:#666">If this wasn\'t you, simply ignore this email — the address will never be mailed again.</p>';
-  return source === 'design-doc'
-    ? sendEmail(env, email, 'Your EAS access code',
-        wrap('<p>You asked nicely. Confirm this address and your access code appears on the very next page.</p>' + button))
-    : sendEmail(env, email, 'EAS Newsletter',
-        wrap('<p>Hi there legend — you (or someone using this address) asked to receive the EAS newsletter.</p>' + button));
+  return `<p><a href="${link}" style="display:inline-block;background:#c428a3;color:#fff;padding:0.6em 1.2em;border-radius:4px;text-decoration:none">Confirm</a></p>` +
+    `<p style="font-size:0.85em;color:#666">Or paste this link into your browser:<br>${link}</p>`;
+};
+
+function confirmationEmail(env, email, token) {
+  return sendEmail(env, email, 'EAS Newsletter',
+    wrap('<p>Hi there legend — you (or someone using this address) asked to receive the EAS newsletter.</p>' +
+      confirmButton(token) +
+      '<p style="font-size:0.85em;color:#666">If this wasn\'t you, simply ignore this email — the address will never be mailed again.</p>'));
 }
 
 // The warmest lead the site produces, delivered instead of sitting silently
@@ -99,18 +104,16 @@ function confirmationEmail(env, email, token, source) {
 // re-requesting 400 times produces one email, not 400. The stamp is written
 // only after a successful send, so a failed alert retries on the next
 // request instead of going silent for a day.
-function shouldAlert(existing) {
-  if (!existing || !existing.doc_alert_utc) return true;
-  const last = Date.parse(existing.doc_alert_utc.replace(' ', 'T') + 'Z');
+function olderThanADay(stamp) {
+  if (!stamp) return true;
+  const last = Date.parse(stamp.replace(' ', 'T') + 'Z');
   return !Number.isFinite(last) || Date.now() - last > 24 * 3600 * 1000;
 }
 
-function alertToby(context, env, email, nlConsent, status) {
-  const detail = {
-    'sent': 'New requester — confirmation email pending their click.',
-    'resent': 'Repeat request from a still-unconfirmed address — confirmation re-sent.',
-    'code-sent': 'Already-verified address — the access code went straight to them.',
-  }[status] ?? status;
+function alertToby(context, env, email, nlConsent, verified) {
+  const detail = verified
+    ? 'Known, verified address — the document opened.'
+    : 'Document opened. Address NOT verified (it may be made up); a copy of the link was emailed to it.';
   context.waitUntil((async () => {
     const sent = await sendEmail(env, 'contact@electricairshipping.com',
       `Ask nicely: ${email}`,
@@ -128,23 +131,76 @@ function alertToby(context, env, email, nlConsent, status) {
   })().catch(() => { /* the lead is still in D1 */ }));
 }
 
-function codeEmail(env, email, joinToken) {
-  // No "again" — this path serves anyone already verified, including
-  // newsletter subscribers asking for the document the FIRST time.
-  //
-  // joinToken (present only when the row lacks newsletter consent) makes the
-  // invitation genuinely one-click: the address is already verified as this
-  // recipient's, so clicking IS express consent — no form, no re-entry.
-  const join = joinToken
-    ? `<p style="margin-top:1.5em">Want the story as it unfolds? <a href="https://electricairshipping.com/api/join?t=${joinToken}">Join the EAS newsletter</a> — one click, that's it.</p>`
-    : '';
-  return sendEmail(env, email, 'Your EAS access code',
+// The copy-of-the-link email. `extra` is one of:
+//   { confirmToken } — unverified address that wants the newsletter: the
+//                      confirm button is the double opt-in, same as RECEIVE.
+//   { joinToken }    — verified address without consent: a one-click join
+//                      (the address is already proven theirs, so the click
+//                      IS express consent — see /api/join).
+//   {}               — nothing to add.
+function docEmail(env, email, extra) {
+  const tail = extra.confirmToken
+    ? '<p style="margin-top:1.5em">You also asked for the EAS newsletter — confirm this address and it\'s on its way:</p>' +
+      confirmButton(extra.confirmToken)
+    : extra.joinToken
+      ? `<p style="margin-top:1.5em">Want the story as it unfolds? <a href="https://electricairshipping.com/api/join?t=${extra.joinToken}">Join the EAS newsletter</a> — one click, that's it.</p>`
+      : '';
+  return sendEmail(env, email, 'Your copy: Sunship Conceptual Design',
     wrap(
-      '<p>You asked nicely. Your access code:</p>' +
-      `<p style="font-size:1.4em"><b>${env.GATE_PASSWORD}</b></p>` +
-      '<p>Use it on the <a href="https://electricairshipping.com/knowledgebase">EAS knowledge base</a>, point 5.</p>' +
-      join
+      '<p>You asked nicely. Here\'s your copy, to keep:</p>' +
+      `<p style="font-size:1.2em"><a href="${env.GATE_DOC_URL}" style="color:#c428a3">Sunship Conceptual Design</a></p>` +
+      tail +
+      '<p style="font-size:0.85em;color:#666">If this wasn\'t you, simply ignore this email.</p>'
     ));
+}
+
+// Point 5's ASK NICELY. The visitor gets the URL in the response whatever
+// happens to the emails — those run after the reply, via waitUntil.
+async function designDoc(context, env, email, nlConsent, existing) {
+  if (!env.GATE_DOC_URL) {
+    return Response.json({ ok: false, error: 'server' }, { status: 500 });
+  }
+  const verified = !!(existing && existing.verified);
+  const consent = Math.max(existing?.nl_consent ?? 0, nlConsent);
+
+  if (existing) {
+    // Consent and doc-interest only ever ratchet upward.
+    await env.DB
+      .prepare("UPDATE newsletter SET nl_consent = ?2, source = 'design-doc' WHERE email = ?1")
+      .bind(email, consent)
+      .run();
+  } else {
+    await env.DB
+      .prepare("INSERT INTO newsletter (email, added_utc, verified, source, nl_consent) VALUES (?1, datetime('now'), 0, 'design-doc', ?2)")
+      .bind(email, nlConsent)
+      .run();
+  }
+
+  // One copy email per address per 24h, so the form can't be used to flood
+  // a stranger's inbox. A token is minted only when that email will carry it.
+  if (olderThanADay(existing?.doc_sent_utc)) {
+    const extra = {};
+    if (!verified && consent) extra.confirmToken = crypto.randomUUID();
+    else if (verified && !consent) extra.joinToken = crypto.randomUUID();
+    const token = extra.confirmToken ?? extra.joinToken;
+    if (token) {
+      await env.DB
+        .prepare('UPDATE newsletter SET token = ?2 WHERE email = ?1')
+        .bind(email, token)
+        .run();
+    }
+    context.waitUntil((async () => {
+      if (await docEmail(env, email, extra)) {
+        await env.DB
+          .prepare("UPDATE newsletter SET doc_sent_utc = datetime('now') WHERE email = ?1")
+          .bind(email)
+          .run();
+      }
+    })().catch(() => { /* the visitor already has the document */ }));
+  }
+
+  if (olderThanADay(existing?.doc_alert_utc)) alertToby(context, env, email, nlConsent, verified);
+  return Response.json({ ok: true, url: env.GATE_DOC_URL });
 }
 
 export async function onRequestPost(context) {
@@ -188,38 +244,22 @@ export async function onRequestPost(context) {
   try {
     await ensureSchema(env.DB);
     const existing = await env.DB
-      .prepare('SELECT verified, nl_consent, doc_alert_utc FROM newsletter WHERE email = ?1')
+      .prepare('SELECT verified, nl_consent, doc_alert_utc, doc_sent_utc FROM newsletter WHERE email = ?1')
       .bind(email)
       .first();
 
-    // Consent and doc-interest only ever ratchet upward here — a design-doc
-    // request never cancels a newsletter subscription, and vice versa.
+    if (source === 'design-doc') return await designDoc(context, env, email, nlConsent, existing);
+
+    // Newsletter (RECEIVE). Consent only ever ratchets upward — a newsletter
+    // signup never cancels a design-doc row's history, and vice versa.
     if (existing) {
       await env.DB
-        .prepare('UPDATE newsletter SET nl_consent = MAX(nl_consent, ?2), source = CASE WHEN ?3 = \'design-doc\' THEN \'design-doc\' ELSE source END WHERE email = ?1')
-        .bind(email, nlConsent, source)
+        .prepare('UPDATE newsletter SET nl_consent = MAX(nl_consent, ?2) WHERE email = ?1')
+        .bind(email, nlConsent)
         .run();
     }
 
     if (existing && existing.verified) {
-      if (source === 'design-doc') {
-        // If the row still lacks newsletter consent, the code email carries a
-        // one-click join link. The token is minted only for a verified row,
-        // so /api/join can treat the click as the address owner's consent.
-        let joinToken = null;
-        if (!Math.max(existing.nl_consent ?? 0, nlConsent)) {
-          joinToken = crypto.randomUUID();
-          await env.DB
-            .prepare('UPDATE newsletter SET token = ?2 WHERE email = ?1')
-            .bind(email, joinToken)
-            .run();
-        }
-        if (!env.GATE_PASSWORD || !(await codeEmail(env, email, joinToken))) {
-          return Response.json({ ok: false, error: 'email' }, { status: 502 });
-        }
-        if (shouldAlert(existing)) alertToby(context, env, email, nlConsent, 'code-sent');
-        return Response.json({ ok: true, status: 'code-sent' });
-      }
       return Response.json({ ok: true, status: 'already' });
     }
 
@@ -236,11 +276,8 @@ export async function onRequestPost(context) {
         .run();
     }
 
-    if (!(await confirmationEmail(env, email, token, source))) {
+    if (!(await confirmationEmail(env, email, token))) {
       return Response.json({ ok: false, error: 'email' }, { status: 502 });
-    }
-    if (source === 'design-doc' && shouldAlert(existing)) {
-      alertToby(context, env, email, nlConsent, existing ? 'resent' : 'sent');
     }
     return Response.json({ ok: true, status: existing ? 'resent' : 'sent' });
   } catch {

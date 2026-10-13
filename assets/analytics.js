@@ -10,7 +10,7 @@
  * scroller is one visitor, not ten.
  *
  * Usage: any element with data-track="name" counts its clicks; the gate
- * script calls window.easTrack directly for its two events. A name must be
+ * script calls window.easTrack directly for gate_ask. A name must be
  * on the allowlist in functions/api/event.js, or the server refuses it.
  */
 
