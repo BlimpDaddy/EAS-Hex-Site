@@ -303,7 +303,7 @@
             <div class="text-spacer-left"></div>
             <div class="text-text">
                 <div class="text-number">
-                    <span data-id="text-number">1</span>
+                    <span data-id="text-number"></span>
                 </div>
                 <div class="text-spacer-right"></div>
                 <div class="text">
@@ -342,16 +342,16 @@
         <circle class="circle-select" data-circle="3" cx="70" cy="84.641"></circle>
         <circle class="circle-select" data-circle="4" cx="30" cy="84.641"></circle>
         <circle class="circle-select" data-circle="5" cx="10" cy="50"></circle>
-        <text class="selected-text" data-text="0" x="30" y="15.359">1</text>
-        <text data-text="1" x="70" y="15.359">2</text>
-        <text data-text="2" x="90" y="50">3</text>
-        <text data-text="3" x="70" y="84.641">4</text>
-        <text data-text="4" x="30" y="84.641">5</text>
-        <text data-text="5" x="10" y="50">6</text>
+        <text class="selected-text" data-text="0" x="30" y="15.359"></text>
+        <text data-text="1" x="70" y="15.359">1</text>
+        <text data-text="2" x="90" y="50">2</text>
+        <text data-text="3" x="70" y="84.641">3</text>
+        <text data-text="4" x="30" y="84.641">4</text>
+        <text data-text="5" x="10" y="50">5</text>
         <circle class="video-portal" cx="50" cy="50" r="27.5"></circle>
     </svg>
 
-    <!-- Hex 6 access gate. Shares the newsletter modal's styles (.nl-*).
+    <!-- Point 5 access gate. Shares the newsletter modal's styles (.nl-*).
          The gate is marketing theatre by design — the real payoff is the
          ASK NICELY funnel; every request becomes a verified address. -->
     <div class="nl-overlay" data-gate-overlay role="dialog" aria-modal="true" aria-label="Access required">
@@ -421,7 +421,7 @@
             },
             {
                 title: "View the full:",
-                // Slot 6 is gated. The document URL is deliberately NOT in
+                // Point 5 (index 5) is gated. The document URL is deliberately NOT in
                 // this file — the server returns it only to a correct
                 // password (see /api/gate), and an unlocked device keeps it
                 // in localStorage. View-source reveals nothing.
@@ -460,7 +460,8 @@
 
             elements.title.textContent = config[n].title;
             elements.subtitle.innerHTML = n === 5 ? slot6Subtitle() : config[n].subtitle;
-            elements.currentNumber.textContent = n + 1;
+            // Point 0 is the welcome slot and carries no number; the rest read 1-5.
+            elements.currentNumber.textContent = n === 0 ? '' : n;
         }
 
         updateSelection(0);
@@ -469,7 +470,7 @@
             circle.addEventListener("click", () => updateSelection(circle.dataset.circle));
         }
 
-        /* ------------------------------- the hex 6 access gate ------------ */
+        /* ------------------------------- the point 5 access gate ---------- */
         (() => {
             // Same site-wide key the newsletter uses; registered to the domain.
             const TURNSTILE_SITEKEY = '0x4AAAAAAEKubehZQp3K3TbK';
@@ -545,7 +546,7 @@
                         localStorage.setItem(DOC_KEY, data.url);
                         if (window.easTrack) window.easTrack('gate_unlock');
                         msg.textContent = 'Welcome ✓';
-                        updateSelection(5);   // slot 6 becomes a plain link on this device
+                        updateSelection(5);   // point 5 becomes a plain link on this device
                         setTimeout(() => { busy = false; close(); window.open(data.url, '_blank', 'noopener'); }, 600);
                         return;
                     }

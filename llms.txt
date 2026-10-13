@@ -76,7 +76,7 @@ working assumption. None are measured.
   the mathematics of the VS/VE framework. Published in *Airship*, the journal of
   the Airship Association, July 2026.
 - The full 60-page Sunship Conceptual Design is free via the access gate at
-  knowledge base point 6 — ask nicely.
+  knowledge base point 5 — ask nicely.
 
 ## Jellyfish (the monthly update)
 

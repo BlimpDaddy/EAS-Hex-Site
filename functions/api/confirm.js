@@ -47,7 +47,7 @@ export async function onRequestGet({ request, env }) {
         : p('Your access code is on its way by email.');
       return page('You asked nicely ✓',
         code +
-        p('Use it at <a href="https://electricairshipping.com/knowledgebase" style="color:#ff9900">the knowledge base</a>, point 6.') +
+        p('Use it at <a href="https://electricairshipping.com/knowledgebase" style="color:#ff9900">the knowledge base</a>, point 5.') +
         (row.nl_consent ? p('You\'ll also receive the EAS newsletter at this address.') : ''));
     }
 

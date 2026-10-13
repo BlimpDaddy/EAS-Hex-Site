@@ -142,7 +142,7 @@ function codeEmail(env, email, joinToken) {
     wrap(
       '<p>You asked nicely. Your access code:</p>' +
       `<p style="font-size:1.4em"><b>${env.GATE_PASSWORD}</b></p>` +
-      '<p>Use it on the <a href="https://electricairshipping.com/knowledgebase">EAS knowledge base</a>, point 6.</p>' +
+      '<p>Use it on the <a href="https://electricairshipping.com/knowledgebase">EAS knowledge base</a>, point 5.</p>' +
       join
     ));
 }

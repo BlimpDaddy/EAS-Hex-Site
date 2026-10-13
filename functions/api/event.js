@@ -25,8 +25,8 @@ const EVENTS = new Set([
     'receive',      // RECEIVE: top bar, or the homepage Jellyfish box
     'receive-news', // the Jellyfish box on the news page
     'news',         // NEWS in the menu, or All news on the homepage
-    'gate_ask',     // hex 6: ASK NICELY submitted
-    'gate_unlock',  // hex 6: correct password entered
+    'gate_ask',     // point 5: ASK NICELY submitted
+    'gate_unlock',  // point 5: correct password entered
 ]);
 
 export async function onRequestPost({ request, env }) {
