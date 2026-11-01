@@ -665,8 +665,9 @@
 
         <!-- ============================================================ news
              No content of its own: the cards are read from /news at load
-             time, both rails merged newest first, so adding an entry to the
-             news page is the only update this ever needs. Without script (or
+             time - the newest few of each rail (counts in the script below),
+             merged newest first - so adding an entry to the news page is the
+             only update this ever needs. Without script (or
              if the fetch fails) it is just the heading and the All news link. -->
         <!-- News, signup and footer together fill exactly one screen below
              the bar, so the page ends on a clean snap with nothing of the
@@ -723,7 +724,11 @@
         /* News rail: borrow the cards from /news (see the comment on the
          * section). Each card keeps its picture, title and date; summaries
          * and buttons stay on the news page. Relative links are rewritten
-         * against /news/ so they still resolve from here. */
+         * against /news/ so they still resolve from here.
+         * Only the newest few of each rail come across, so a run of monthly
+         * issues cannot push the latest article off the screen. One number
+         * per rail, in the news page's order: Jellyfish, then articles. */
+        const NEWS_PER_RAIL = [2, 1];
         (async () => {
             const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july',
                 'august', 'september', 'october', 'november', 'december'];
@@ -736,7 +741,9 @@
                 if (!res.ok) return;
                 const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
                 const base = new URL('/news/', location.href);
-                const items = [...doc.querySelectorAll('.rail > li')];
+                /* Each rail is newest first in its markup, so its first n are its newest. */
+                const items = [...doc.querySelectorAll('.rail')].flatMap((ul, i) =>
+                    [...ul.children].slice(0, NEWS_PER_RAIL[i] ?? 0));
                 if (!items.length) return;
                 /* Stable sort: within a month, Jellyfish (the first rail) leads. */
                 items.sort((a, b) => when(b) - when(a));

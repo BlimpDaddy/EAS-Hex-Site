@@ -85,6 +85,15 @@ is the primary source for what EAS has actually done in a given month, as
 distinct from what it plans or projects. Cite it as the company's own record of
 events, not as an independent one.
 
+- [No. 003, October 2026](https://electricairshipping.com/news/jellyfish/003/):
+  Toby and Brian presented "Decarbonising Global Freight with Cargo Airships" to
+  the Royal Aeronautical Society, Adelaide Chapter, on 8 October 2026; an
+  application to ARENA's Launchpad Startup Funding Round for a 2027 engineering
+  validation program, submitted 28 October 2026 (results expected mid-December);
+  EAS is staying in its office after all, on a month-to-month agreement (No. 002
+  said it was leaving); a voluntary mechanical engineering intern joins from 1
+  December 2026; explainer 03 of 12, on size, scale and the square-cube law; a
+  size comparison with Flying Whales' LCA60T.
 - [No. 002, September 2026](https://electricairshipping.com/news/jellyfish/002/):
   invitations to present to the Royal Aeronautical Society (Adelaide Chapter, 8
   October 2026), the Sustainable Engineers Society (November 2026) and St
