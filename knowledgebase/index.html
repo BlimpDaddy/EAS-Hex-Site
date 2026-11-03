@@ -440,8 +440,10 @@
             currentNumber: document.querySelector('[data-id="text-number"]'),
         };
 
+        let current = 0;
         function updateSelection(progressNumber) {
             const n = Number(progressNumber);
+            current = n;
 
             for (let i = 0; i <= 5; i++) elements.path.classList.remove(`path${i}`);
             elements.path.classList.add(`path${n}`);
@@ -459,6 +461,30 @@
         }
 
         updateSelection(0);
+
+        // Hold the text box at the height of its tallest point, so the
+        // hexagon below never jumps when a point's text runs to two lines
+        // (point 4 always; point 0 on phones). Re-measured on resize and
+        // once the fonts arrive, since both change where lines wrap.
+        const textBox = document.querySelector('.text-text');
+        function holdBoxHeight() {
+            textBox.style.minHeight = '';
+            let tallest = 0;
+            for (let n = 0; n <= 5; n++) {
+                elements.title.textContent = config[n].title;
+                elements.subtitle.innerHTML = n === 5 ? slot6Subtitle() : config[n].subtitle;
+                tallest = Math.max(tallest, textBox.getBoundingClientRect().height);
+            }
+            textBox.style.minHeight = `${Math.ceil(tallest)}px`;
+            updateSelection(current);
+        }
+        holdBoxHeight();
+        document.fonts?.ready.then(holdBoxHeight);
+        let resizeTimer = 0;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(holdBoxHeight, 100);
+        });
 
         for (const circle of elements.circles) {
             circle.addEventListener("click", () => updateSelection(circle.dataset.circle));
