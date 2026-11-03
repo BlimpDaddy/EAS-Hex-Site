@@ -130,6 +130,12 @@
             font-size: 1.5rem;
         }
 
+        /* A smaller second line under a point's link (point 4). */
+        .subline {
+            display: block;
+            font-size: 0.85em;
+        }
+
         .hyperlink {
             color: var(--pink);
         }
@@ -411,7 +417,7 @@
             },
             {
                 title: "Read the:",
-                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1_xdBSdVZ-B19MCYf1XynxpSxqAu0TEsW/view'>Maths &amp; Design Paper<br>(The Shape-Volume Scalar)</a>"
+                subtitle: "<a target='_blank' rel='noopener' class='hyperlink' href='https://drive.google.com/file/d/1_xdBSdVZ-B19MCYf1XynxpSxqAu0TEsW/view'>Maths &amp; Design Paper<span class='subline'>(The Shape-Volume Scalar)</span></a>"
             },
             {
                 title: "View the full:",
@@ -440,7 +446,31 @@
             currentNumber: document.querySelector('[data-id="text-number"]'),
         };
 
+        // The hexagon is laid out for a one-line box (the shortest point).
+        // A point whose text runs longer (point 4 always; point 0 on phones)
+        // grows downward into the gap above the top circle instead of
+        // pushing the hexagon down and shrinking it: a negative bottom
+        // margin cancels exactly the extra height. Re-measured on resize and
+        // once the fonts arrive, since both change where lines wrap.
+        const textBox = document.querySelector('.text-text');
+        let baseHeight = 0;
         let current = 0;
+        function fitBox() {
+            if (!baseHeight) return;
+            const extra = textBox.getBoundingClientRect().height - baseHeight;
+            textBox.style.marginBottom = extra > 0 ? `${-extra}px` : '';
+        }
+        function measureBase() {
+            let shortest = Infinity;
+            for (let n = 0; n <= 5; n++) {
+                elements.title.textContent = config[n].title;
+                elements.subtitle.innerHTML = n === 5 ? slot6Subtitle() : config[n].subtitle;
+                shortest = Math.min(shortest, textBox.getBoundingClientRect().height);
+            }
+            baseHeight = shortest;
+            updateSelection(current);
+        }
+
         function updateSelection(progressNumber) {
             const n = Number(progressNumber);
             current = n;
@@ -458,32 +488,15 @@
             elements.subtitle.innerHTML = n === 5 ? slot6Subtitle() : config[n].subtitle;
             // Point 0 is the welcome slot and carries no number; the rest read 1-5.
             elements.currentNumber.textContent = n === 0 ? '' : n;
+            fitBox();
         }
 
-        updateSelection(0);
-
-        // Hold the text box at the height of its tallest point, so the
-        // hexagon below never jumps when a point's text runs to two lines
-        // (point 4 always; point 0 on phones). Re-measured on resize and
-        // once the fonts arrive, since both change where lines wrap.
-        const textBox = document.querySelector('.text-text');
-        function holdBoxHeight() {
-            textBox.style.minHeight = '';
-            let tallest = 0;
-            for (let n = 0; n <= 5; n++) {
-                elements.title.textContent = config[n].title;
-                elements.subtitle.innerHTML = n === 5 ? slot6Subtitle() : config[n].subtitle;
-                tallest = Math.max(tallest, textBox.getBoundingClientRect().height);
-            }
-            textBox.style.minHeight = `${Math.ceil(tallest)}px`;
-            updateSelection(current);
-        }
-        holdBoxHeight();
-        document.fonts?.ready.then(holdBoxHeight);
+        measureBase();
+        document.fonts?.ready.then(measureBase);
         let resizeTimer = 0;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(holdBoxHeight, 100);
+            resizeTimer = setTimeout(measureBase, 100);
         });
 
         for (const circle of elements.circles) {
