@@ -112,3 +112,19 @@ h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
   padding:clamp(1.4rem,3vw,2rem); margin:3rem 0 0; }
 .signup:hover,.signup:focus-visible{ color:var(--bg); background:var(--orange);
   border-color:var(--orange); }
+
+/* ------------------------------------------------------------- articles */
+/* A story extracted word for word from a Jellyfish issue, or any other
+   article that lives on this site. One photo, body text, an optional pull
+   quote, then a line linking back to the issue it came from. */
+.article figure{ margin:1.5rem 0 2rem; }
+.article figure img{ display:block; width:100%; height:auto; border:1px solid #2a2a2a; }
+.article figcaption{ font-size:.9rem; color:var(--muted); margin-top:.6rem; line-height:1.5; }
+.article .body{ max-width:42rem; }
+.article .body p{ font-size:1.08rem; line-height:1.7; color:#dcdcdc; margin:0 0 1.2rem; }
+.article .pull{ margin:2rem 0; padding:0 0 0 1.25rem; border-left:2px solid var(--berry); }
+.article .pull p{ font-size:1.3rem; line-height:1.5; color:var(--fg); margin:0 0 .8rem; }
+.article .pull footer{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+  letter-spacing:.12em; font-size:.95rem; color:var(--muted); }
+.article .source{ font-family:Genos, system-ui, sans-serif; text-transform:uppercase;
+  letter-spacing:.14em; font-size:1rem; color:var(--muted); margin:2.5rem 0 0; }

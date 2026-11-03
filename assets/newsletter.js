@@ -6,6 +6,9 @@
  * to include this file and provide a trigger with [data-nl-open] (the RECEIVE
  * link in the top bar).
  *
+ * Loads Turnstile itself, and opens on arrival when the URL ends in
+ * #receive (the QR code on the talk slides).
+ *
  * Unchanged behaviour: Turnstile bot check -> POST /api/waitlist -> D1 ->
  * Resend double opt-in email -> /api/confirm. Only the address's owner can
  * confirm it, which is both the anti-forgery step and the Spam Act consent
@@ -49,11 +52,29 @@
         });
     };
 
+    // Turnstile's own script. Only the homepage has it in its markup; every
+    // other page (news, issues, articles) relied on it and so could never
+    // submit - "Please complete the verification check" every time. Loading
+    // it here means a page needs nothing but this file. A page that already
+    // has the tag is left alone; we just wait for it.
+    const TS_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    const ensureTurnstile = () => {
+        if (window.turnstile) { renderTurnstile(); return; }
+        let tag = document.querySelector('script[src^="https://challenges.cloudflare.com/turnstile/"]');
+        if (!tag) {
+            tag = document.createElement('script');
+            tag.src = TS_SRC;
+            tag.async = true;
+            document.head.appendChild(tag);
+        }
+        tag.addEventListener('load', renderTurnstile, { once: true });
+    };
+
     const open = () => {
         lastFocus = document.activeElement;
         overlay.classList.add('open');
         msg.textContent = '';
-        renderTurnstile();
+        ensureTurnstile();
         emailIn.focus();
     };
     const close = () => {
@@ -69,6 +90,11 @@
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     emailIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') okBtn.click(); });
+
+    // Any page's URL ending in #receive opens the signup straight away. This
+    // is what the QR code on the talk slides points at:
+    //   https://electricairshipping.com/news/#receive
+    if (location.hash === '#receive') open();
 
     okBtn.addEventListener('click', async () => {
         if (busy) return;
