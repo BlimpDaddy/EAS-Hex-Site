@@ -1,8 +1,8 @@
 /* Electric Air Shipping — arrows for the news rails.
  *
  * Injects its own markup, the way assets/menu.js does, so a new strand gets
- * arrows with no extra HTML: give it a .strand-head and a .rail and this finds
- * it. A rail that fits on screen hides its arrows entirely rather than showing
+ * arrows with no extra HTML: give it a .rail and this finds it. The back arrow
+ * sits left of the first picture, the on arrow right of the last. A rail that fits on screen hides its arrows entirely rather than showing
  * two dead buttons — which is the state the page is in today, with one card in
  * each rail.
  *
@@ -45,16 +45,21 @@
 
     function build(strand) {
         var rail = strand.querySelector('.rail');
-        var head = strand.querySelector('.strand-head');
-        if (!rail || !head || head.querySelector('.rail-nav')) return;
+        if (!rail || rail.parentNode.classList.contains('rail-frame')) return;
 
-        var nav = document.createElement('div');
-        nav.className = 'rail-nav';
+        /* The arrows sit either side of the pictures (outside them where the
+         * page has room, over their edges where it does not), so the rail is
+         * wrapped in a frame they can be positioned against. */
+        var frame = document.createElement('div');
+        frame.className = 'rail-frame';
+        rail.parentNode.insertBefore(frame, rail);
+        frame.appendChild(rail);
         var prev = arrow(-1);
         var next = arrow(1);
-        nav.appendChild(prev);
-        nav.appendChild(next);
-        head.appendChild(nav);
+        prev.classList.add('rail-prev');
+        next.classList.add('rail-next');
+        frame.appendChild(prev);
+        frame.appendChild(next);
 
         var reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -71,15 +76,23 @@
             /* Sub-pixel widths mean scrollLeft never quite reaches the end, so
              * both edges get a pixel of slack. */
             var max = rail.scrollWidth - rail.clientWidth;
-            nav.hidden = max <= 1;
+            prev.hidden = next.hidden = max <= 1;
             prev.disabled = rail.scrollLeft <= 1;
             next.disabled = rail.scrollLeft >= max - 1;
+            /* Centre the arrows on the pictures, not on the whole card. */
+            var img = rail.querySelector('img');
+            if (img && img.offsetHeight) {
+                frame.style.setProperty('--arrow-y', (img.offsetTop + img.offsetHeight / 2) + 'px');
+            }
         }
         rail.addEventListener('scroll', sync, { passive: true });
         addEventListener('resize', sync);
         /* Cards are sized off images that may not have arrived yet, so the
          * overflow test is re-run once everything has loaded. */
         addEventListener('load', sync);
+        rail.querySelectorAll('img').forEach(function (im) {
+            if (!im.complete) im.addEventListener('load', sync);
+        });
         sync();
     }
 

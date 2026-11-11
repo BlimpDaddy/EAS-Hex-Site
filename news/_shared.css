@@ -27,9 +27,7 @@ h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
    They are deliberately identical, so a third strand needs markup only. */
 .strand{ margin-top:2.5rem; }
 
-/* Heading line. The rail's arrows are injected in here by rail.js rather than
-   floated over the artwork, where they would cover the thing you are trying
-   to look at and fight the cards for clicks. */
+/* Heading line. */
 .strand-head{ display:flex; align-items:center; justify-content:space-between;
   gap:1rem; }
 
@@ -55,8 +53,20 @@ h1{ font-weight:500; font-size:clamp(2.2rem,6vw,3.4rem); line-height:1.02;
    tabindex in the markup, and a focus ring that survives the photography. */
 .rail:focus-visible{ outline:2px solid var(--orange); outline-offset:4px; }
 
-.rail-nav{ display:flex; gap:.4rem; }
-.rail-nav[hidden]{ display:none; }
+/* Arrows either side of the pictures, centred on them (rail.js sets --arrow-y).
+   Outside the rail where the page margin has room for them, so they never
+   cover the artwork; over the picture edges, on a dark backing, where not. */
+.rail-frame{ position:relative; }
+.rail-frame > .rail-arrow{ position:absolute; z-index:1; top:var(--arrow-y,40%);
+  transform:translateY(-50%); background:rgba(17,17,17,.85); }
+.rail-frame > .rail-prev{ left:.4rem; }
+.rail-frame > .rail-next{ right:.4rem; }
+.rail-frame > .rail-arrow[hidden]{ display:none; }
+@media (min-width:68rem){
+  .rail-frame > .rail-arrow{ background:none; }
+  .rail-frame > .rail-prev{ left:-2.6rem; }
+  .rail-frame > .rail-next{ right:-2.6rem; }
+}
 .rail-arrow{ width:2rem; height:2rem; display:grid; place-items:center;
   background:none; color:var(--berry); border:1px solid var(--berry);
   cursor:pointer; font:inherit; line-height:1; padding:0; }

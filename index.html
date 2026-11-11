@@ -427,13 +427,44 @@
             color: var(--orange);
         }
 
-        /* rail.js puts its arrows in .strand-head; keep them left of "All news". */
-        .news .strand-head > .rail-nav {
-            order: 1;
+        /* rail.js wraps the rail in .rail-frame and puts its arrows either
+           side of the pictures - see news/_shared.css for why. */
+        .rail-frame {
+            position: relative;
         }
 
-        .news .strand-head > .news-all {
-            order: 2;
+        .rail-frame > .rail-arrow {
+            position: absolute;
+            z-index: 1;
+            top: var(--arrow-y, 40%);
+            transform: translateY(-50%);
+            background: rgba(17, 17, 17, 0.85);
+        }
+
+        .rail-frame > .rail-prev {
+            left: 0.4rem;
+        }
+
+        .rail-frame > .rail-next {
+            right: 0.4rem;
+        }
+
+        .rail-frame > .rail-arrow[hidden] {
+            display: none;
+        }
+
+        @media (min-width: 68rem) {
+            .rail-frame > .rail-arrow {
+                background: none;
+            }
+
+            .rail-frame > .rail-prev {
+                left: -2.6rem;
+            }
+
+            .rail-frame > .rail-next {
+                right: -2.6rem;
+            }
         }
 
         .news .rail {
@@ -491,15 +522,6 @@
             letter-spacing: 0.16em;
             font-size: 0.95rem;
             color: var(--muted);
-        }
-
-        .rail-nav {
-            display: flex;
-            gap: 0.4rem;
-        }
-
-        .rail-nav[hidden] {
-            display: none;
         }
 
         .rail-arrow {
@@ -757,7 +779,7 @@
                 /* The news page's own arrows script, loaded only once there
                  * is a rail for it to find. */
                 const s = document.createElement('script');
-                s.src = '/news/rail.js';
+                s.src = '/news/rail.js?v=2';
                 document.body.appendChild(s);
             } catch { /* heading + All news link remain */ }
         })();
