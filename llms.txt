@@ -64,6 +64,9 @@ working assumption. None are measured.
 - [Fleet Calculator](https://calc.electricairshipping.com/): interactive —
   compare hull shapes by volume efficiency, size a Sunship, model fleet-scale
   work and emissions. Any 3D shape can be uploaded and measured.
+- [Blimpy Tap](https://blimpytap.electricairshipping.com/): a small free
+  browser game made by EAS: tap to keep a pixel-art Sunship flying. For fun,
+  not a simulation; nothing in it is a performance figure.
 
 ## Documents
 

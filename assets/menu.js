@@ -14,7 +14,8 @@
 
     var SECTIONS = [
         { label: 'NEWS', href: '/news/', track: 'news' },
-        { label: 'KNOWLEDGE BASE', href: '/knowledgebase/', track: 'kb' }
+        { label: 'KNOWLEDGE BASE', href: '/knowledgebase/', track: 'kb' },
+        { label: 'BLIMPY TAP', href: 'https://blimpytap.electricairshipping.com/', track: 'blimpytap' }
     ];
 
     function build() {
