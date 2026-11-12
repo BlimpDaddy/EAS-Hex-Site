@@ -180,14 +180,18 @@
             white-space: nowrap;
         }
 
+        /* Matches the v5 deck's IP box: faint berry tint, light berry outline. */
         .btn-primary {
-            background: var(--berry);
+            background: rgba(196, 40, 163, 0.16);
+            border: 1.5px solid #e070c8;
             color: #fff;
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
         }
 
         .btn-primary:hover,
         .btn-primary:focus-visible {
-            background: #d63bb4;
+            background: rgba(196, 40, 163, 0.34);
         }
 
         .btn:focus-visible {
@@ -267,7 +271,7 @@
             font-size: 0.78rem;
             letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: var(--muted);
+            color: var(--orange);
         }
 
         .half h2 {
